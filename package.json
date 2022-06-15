@@ -4,8 +4,7 @@
   "description": "Distributed video transcode service",
   "main": "dist/index.js",
   "scripts": {
-    "start-master":"node dist/index.js --master",
-    "start-salver":"node dist/index.js --salver",
+    "start": "npm run build && node dist/index.js",
     "test": "nyc --reporter=html --reporter=text mocha -r ts-node/register --timeout 300000 --slow 500 --recursive test/**/*.test.ts",
     "lint": "eslint ./src",
     "build": "tsc --build"
