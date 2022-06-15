@@ -4,7 +4,7 @@
   "description": "Distributed video transcode service",
   "main": "dist/index.js",
   "scripts": {
-    "start": "npm run build && node dist/index.js",
+    "start": "node -r ts-node/register src/index.ts",
     "test": "nyc --reporter=html --reporter=text mocha -r ts-node/register --timeout 300000 --slow 500 --recursive test/**/*.test.ts",
     "lint": "eslint ./src",
     "build": "tsc --build"
@@ -20,18 +20,18 @@
   },
   "homepage": "https://github.com/mustang1988/VideoChef#readme",
   "dependencies": {
-    "@tsconfig/node14": "^1.0.2",
     "lodash": "^4.17.21",
+    "ts-node": "^10.8.1",
     "typescript": "^4.7.3"
   },
   "devDependencies": {
+    "@tsconfig/node14": "^1.0.2",
     "@types/lodash": "^4.14.182",
     "@types/mocha": "^9.1.1",
     "@types/node": "^17.0.42",
     "@typescript-eslint/eslint-plugin": "^5.28.0",
     "@typescript-eslint/parser": "^5.28.0",
     "mocha": "^10.0.0",
-    "nyc": "^15.1.0",
-    "ts-node": "^10.8.1"
+    "nyc": "^15.1.0"
   }
 }
