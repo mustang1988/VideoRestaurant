@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize/types';
-import { Config } from './config/Config';
-import { IServiceConfig } from './types/IConfig';
-import { IQueue } from './types/IQueue';
+import { Config } from '../config/Config';
+import { IServiceConfig } from '../types/IConfig';
+import { IQueue } from '../types/IQueue';
 
 export class Chef {
     #config: IServiceConfig;
