@@ -12,6 +12,16 @@
 | node_ip          | char             | 已注册执行节点的IP地址                         | 由执行节点向管理节点注册时提交                          |  |
 | node_registed_at | 执行节点注册时间 | 由管理节点在执行节点进行注册时读取系统当前时间 |                                                         |
 | node_status      | char             | 当前执行节点的状态                             | 由执行节点定时上报, 可选值: DISCONNECTED, IDEL, WORKING |
+| created_at       | timestamp        | 记录创建时间                                   | ORM框架自动管理                                         |
+| updated_at       | timestamp        | 记录更新时间                                   | ORM框架自动管理                                         |
+
+状态流转
+
+DISCONNECTED -> IDEL | WORKING
+
+IDEL -> WORKING | DISCONNECTED
+
+WORKING -> IDEL | DISCONNECTED
 
 涉及的操作
 
@@ -32,13 +42,23 @@
 
 用于RPC服务和管理节点记录任务信息
 
-| 字段名        | 字段类型 | 字段说明               | 备注                                                     |
-| :------------ | :------- | :--------------------- | :------------------------------------------------------- |
-| id            | char     | 任务唯一ID             | 由RPC服务接到任务请求后通关算法生成                      |
-| task_file     | char     | 转码原始文件路径       | RPC服务收到的转码请求中提交或RPC服务通过其他文件服务获取 |
-| task_metadata | text     | 转码原始文件元信息     | 由管理节点解析获取                                       |
-| task_status   | char     | 转码任务状态           | 可选值: QUEUING, RUNNING, FINISHED, FAILED               |
-| task_callback | char     | 转码结束后回调通知地址 | RPC服务收到的转码请求中提交                              |
+| 字段名        | 字段类型  | 字段说明               | 备注                                                     |
+| :------------ | :-------- | :--------------------- | :------------------------------------------------------- |
+| id            | char      | 任务唯一ID             | 由RPC服务接到任务请求后通关算法生成                      |
+| task_file     | char      | 转码原始文件路径       | RPC服务收到的转码请求中提交或RPC服务通过其他文件服务获取 |
+| task_metadata | text      | 转码原始文件元信息     | 由管理节点解析获取                                       |
+| task_status   | char      | 转码任务状态           | 可选值: QUEUING, RUNNING, FINISHED, FAILED               |
+| task_callback | char      | 转码结束后回调通知地址 | RPC服务收到的转码请求中提交                              |
+| task_output   | char      | 转码输出文件路径       |                                                          |
+| task_hash     | char      | 转码原始文件hash       |                                                          |
+| created_at    | timestamp | 记录创建时间           | ORM框架自动管理                                          |
+| updated_at    | timestamp | 记录更新时间           | ORM框架自动管理                                          |
+
+状态流转
+
+QUEUING -> RUNNING
+
+RUNNING -> FINISHED | FAILED
 
 涉及的操作
 
@@ -60,16 +80,26 @@
 
 用于管理节点记录作业信息
 
-| 字段名      | 字段类型 | 字段说明             | 备注                                        |
-| :---------- | :------- | :------------------- | :------------------------------------------ |
-| id          | char     | 作业唯一ID           | 由管理节点分发作业时通过算法生成            |
-| job_task_id | char     | 关联任务ID           | tb_task表外键                               |
-| job_node_id | char     | 作业委派的作业节点ID | tb_node表外键                               |
-| job_status  | char     | 作业状态             | 可选值: RUNNING, FINISHIED, REREING, FAILED |
-| job_retried | int      | 作业重试次数         |                                             |
-| job_file    | char     | 作业执行的源文件路径 |                                             |
-| job_args    | char     | 作业执行的参数列表   |                                             |
-| job_log     | char     | 作业执行日志文件路径 |                                             |
+| 字段名      | 字段类型  | 字段说明             | 备注                                        |
+| :---------- | :-------- | :------------------- | :------------------------------------------ |
+| id          | char      | 作业唯一ID           | 由管理节点分发作业时通过算法生成            |
+| job_task_id | char      | 关联任务ID           | tb_task表外键                               |
+| job_node_id | char      | 作业委派的作业节点ID | tb_node表外键                               |
+| job_status  | char      | 作业状态             | 可选值: RUNNING, FINISHIED, RETRYING, FAILED |
+| job_retried | int       | 作业重试次数         |                                             |
+| job_file    | char      | 作业执行的源文件路径 |                                             |
+| job_args    | char      | 作业执行的参数列表   |                                             |
+| job_log     | char      | 作业执行日志文件路径 |                                             |
+| created_at  | timestamp | 记录创建时间         | ORM框架自动管理                             |
+| updated_at  | timestamp | 记录更新时间         | ORM框架自动管理                             |
+
+状态流转
+
+RUNNING -> FINISHED | FAILED
+
+FAILED -> RETRYING
+
+RETRYING -> FINISHED | FAILED
 
 涉及的操作
 
