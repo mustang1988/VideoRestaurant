@@ -21,6 +21,7 @@
   "homepage": "https://github.com/mustang1988/VideoChef#readme",
   "dependencies": {
     "lodash": "^4.17.21",
+    "log4js": "^6.5.2",
     "ts-node": "^10.8.1",
     "typescript": "^4.7.3"
   },
