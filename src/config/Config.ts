@@ -1,4 +1,5 @@
 import { Configuration, Layout } from 'log4js';
+import { Dialect } from 'sequelize/types';
 import {
     IConfig,
     IDatabaseConfig,
@@ -66,6 +67,7 @@ export class Config implements IConfig {
             DB_USER = 'root',
             DB_PASSWORD = 'dell_456',
             DB_DATABASE = 'video_chef',
+            DB_DIALECT = 'mysql',
         } = process.env;
         return {
             host: DB_HOST,
@@ -73,19 +75,41 @@ export class Config implements IConfig {
             username: DB_USER,
             password: DB_PASSWORD,
             database: DB_DATABASE,
+            dialect: DB_DIALECT as Dialect,
         };
     }
 
-    getQueueConfig(): IQueueConfig {
+    getTaskQueueConfig(): IQueueConfig {
         const {
             QUEUE_HOST = 'localhost',
             QUEUE_PORT = '6379',
+            QUEUE_USER = 'root',
             QUEUE_PASSWORD = 'passw0rd@redis',
+            QUEUE_NAME_TASK = 'queue:task',
         } = process.env;
         return {
             host: QUEUE_HOST,
             port: parseInt(QUEUE_PORT),
+            username: QUEUE_USER,
             password: QUEUE_PASSWORD,
+            name: QUEUE_NAME_TASK,
+        };
+    }
+
+    getResultQueueConfig(): IQueueConfig {
+        const {
+            QUEUE_HOST = 'localhost',
+            QUEUE_PORT = '6379',
+            QUEUE_USER = 'root',
+            QUEUE_PASSWORD = 'passw0rd@redis',
+            QUEUE_NAME_RESULT = 'queue:result',
+        } = process.env;
+        return {
+            host: QUEUE_HOST,
+            port: parseInt(QUEUE_PORT),
+            username: QUEUE_USER,
+            password: QUEUE_PASSWORD,
+            name: QUEUE_NAME_RESULT,
         };
     }
 
