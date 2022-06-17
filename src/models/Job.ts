@@ -3,9 +3,14 @@ import {
     CreatedAt,
     DataType,
     Model,
+    Table,
     UpdatedAt,
 } from 'sequelize-typescript';
 
+@Table({
+    tableName: 'tb_job',
+    timestamps: true,
+})
 export class Job extends Model {
     @Column({
         type: DataType.TEXT,

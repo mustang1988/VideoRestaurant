@@ -9,6 +9,7 @@ import {
 
 @Table({
     tableName: 'tb_node',
+    timestamps: true,
 })
 export class Node extends Model {
     @Column({
