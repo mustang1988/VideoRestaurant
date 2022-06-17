@@ -1,5 +1,5 @@
 import { Config } from '../config/Config';
-import { IServiceConfig } from '../types/IConfig';
+import { IServiceConfig } from '../types/config/IConfig';
 
 export class Assistant {
     #config: IServiceConfig;

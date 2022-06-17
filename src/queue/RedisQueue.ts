@@ -1,7 +1,7 @@
-import { IQueue, ITaskQueueMessage } from '../types/IQueue';
+import { IQueue, ITaskQueueMessage } from '../types/queue/IQueue';
 import { createClient } from 'redis';
 import { RedisClientType } from '@redis/client';
-import { IQueueConfig } from '../types/IConfig';
+import { IQueueConfig } from '../types/config/IConfig';
 export class RedisQueue implements IQueue {
     #client: RedisClientType;
     #name: string;

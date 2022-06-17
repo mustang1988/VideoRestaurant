@@ -1,6 +1,10 @@
 import { Configuration } from 'log4js';
 import { Dialect } from 'sequelize/types';
 
+export interface IServiceConfig {
+    host: string;
+    port: number;
+}
 export interface IDatabaseConfig extends IServiceConfig {
     username: string;
     password: string;
@@ -12,11 +16,6 @@ export interface IQueueConfig extends IServiceConfig {
     username: string;
     password: string;
     name: string;
-}
-
-export interface IServiceConfig {
-    host: string;
-    port: number;
 }
 
 export interface IConfig {

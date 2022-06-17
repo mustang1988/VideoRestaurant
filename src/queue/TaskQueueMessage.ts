@@ -1,4 +1,4 @@
-import { ITaskQueueMessage } from '../types/IQueue';
+import { ITaskQueueMessage } from '../types/queue/IQueue';
 
 export class TaskQueueMessage implements ITaskQueueMessage {
     #id: string;

@@ -5,7 +5,7 @@ import {
     IDatabaseConfig,
     IQueueConfig,
     IServiceConfig,
-} from '../types/IConfig';
+} from '../types/config/IConfig';
 
 export class Config implements IConfig {
     getLoggerConfig(): Configuration {
