@@ -71,6 +71,7 @@ export interface IProcessable {
 export interface IMedia {
     getStreams(): IMediaStreams | null;
     getFormat(): IMediaFormat | null;
+    getMetadata(): never;
 }
 
 export interface IMediaStreams {
@@ -145,7 +146,32 @@ export interface IRatio {
 }
 
 export interface IFFmpeg {
-    // TODO
+    v(log_level: string): IFFmpeg;
+    i(input: string): IFFmpeg;
+    threads(threads: number): IFFmpeg;
+    sn(flag: boolean): IFFmpeg;
+    dn(flag: boolean): IFFmpeg;
+    y(flag: boolean): IFFmpeg;
+    g(gop: number): IFFmpeg;
+    r(fps: string): IFFmpeg;
+    pix_fmt(pix_fmt: string): IFFmpeg;
+    c_v(codec: string): IFFmpeg;
+    b_v(bit_rate: number): IFFmpeg;
+    preset(preset: string): IFFmpeg;
+    v_profile(profile: string): IFFmpeg;
+    speed(speed: number): IFFmpeg;
+    row_mt(flag: boolean): IFFmpeg;
+    frame_parallel(flag: boolean): IFFmpeg;
+    tile_columns(tile_columns: number): IFFmpeg;
+    quality(quality: string): IFFmpeg;
+    deadline(deadline: string): IFFmpeg;
+    cpu_used(cpu_used: number): IFFmpeg;
+    level(level: number): IFFmpeg;
+    c_a(codec: string): IFFmpeg;
+    b_a(bit_rate: number): IFFmpeg;
+    ar(sample_rate: number): IFFmpeg;
+    safe(flag: boolean): IFFmpeg;
+    output(output: string): IFFmpeg;
     execute(): Promise<IProcessable>;
     executeSync(): IProcessable;
 }

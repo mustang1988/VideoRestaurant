@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { Option } from './Option';
 
 export class StringOption extends Option<string> {
@@ -15,6 +16,9 @@ export class StringOption extends Option<string> {
     }
 
     toArray(): string[] {
-        return [this.getName(), this.getValue()];
+        const arr: string[] = [];
+        !_.isEmpty(this.getName()) && arr.push(this.getName());
+        arr.push(this.getValue());
+        return arr;
     }
 }
