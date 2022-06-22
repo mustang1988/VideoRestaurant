@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "node -r ts-node/register src/index.ts",
-    "test": "nyc --reporter=html --reporter=text mocha -r ts-node/register --timeout 300000 --slow 500 --recursive test/**/*.test.ts",
+    "test": "nyc --report=html --reporter=text mocha -r ts-node/register --timeout 300000 --slow 500 --recursive test/**/*.test.ts",
     "lint": "eslint ./src",
     "build": "tsc --build"
   },
