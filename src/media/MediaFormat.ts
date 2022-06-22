@@ -17,7 +17,7 @@ export class MediaFormat implements IMediaFormat {
     #probe_score: IProperty<number | null>;
     #tags: IProperty<Map<string, string> | null>;
 
-    constructor(metadata: JSON) {
+    constructor(metadata: never) {
         this.#filename = new StringProperty(_.get(metadata, 'filename', null));
         this.#nb_streams = new NumberProperty(
             _.get(metadata, 'nb_streams', null)

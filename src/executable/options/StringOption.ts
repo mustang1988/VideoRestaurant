@@ -9,7 +9,12 @@ export class StringOption extends Option<string> {
     ) {
         super(name, value, priority, conflicts);
     }
+
     toString(): string {
         return `${this.getName()} ${this.getValue()}`;
+    }
+
+    toArray(): string[] {
+        return [this.getName(), this.getValue()];
     }
 }

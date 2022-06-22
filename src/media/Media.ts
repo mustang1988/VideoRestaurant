@@ -7,13 +7,15 @@ export class Media implements IMedia {
     #streams: IMediaStreams | null;
     #format: IMediaFormat | null;
 
-    constructor(metadata: JSON) {
+    constructor(metadata: never) {
         const format_metadata = _.get(metadata, 'format', null);
         this.#format = _.isNull(format_metadata)
             ? null
-            : new MediaFormat(_.get(metadata, 'format', null));
+            : new MediaFormat(_.get(metadata, 'format'));
         const streams_metadata = _.get(metadata, 'streams', null);
-        this.#streams = new MediaStreams(streams_metadata);
+        this.#streams = _.isNull(streams_metadata)
+            ? null
+            : new MediaStreams(streams_metadata);
     }
 
     getStreams(): IMediaStreams | null {

@@ -9,8 +9,12 @@ export class FlagOption extends Option<boolean> {
     ) {
         super(name, value, priority, conflicts);
     }
-    
+
     toString(): string {
         return this.getValue() ? this.getName() : '';
+    }
+
+    toArray(): string[] {
+        return this.getValue() ? [this.getName()] : [];
     }
 }

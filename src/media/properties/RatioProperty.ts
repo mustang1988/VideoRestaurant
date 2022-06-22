@@ -1,11 +1,12 @@
 import { IProperty, IRatio } from '../../types/Interfaces';
 import { Ratio } from '../../executable/Ratio';
+import _ from 'lodash';
 
 export class RatioProperty implements IProperty<IRatio | null> {
     #value: IRatio | null;
 
-    constructor(value: string) {
-        this.#value = Ratio.parseRatio(value);
+    constructor(value: string | null) {
+        this.#value = _.isNull(value) ? null : Ratio.parseRatio(value);
     }
 
     getValue(): IRatio | null {

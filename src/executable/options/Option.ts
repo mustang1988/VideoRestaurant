@@ -29,4 +29,6 @@ export abstract class Option<T> implements IOption<T> {
     }
 
     abstract toString(): string;
+
+    abstract toArray(): string[];
 }

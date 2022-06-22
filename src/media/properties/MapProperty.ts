@@ -4,7 +4,7 @@ import { IProperty } from '../../types/Interfaces';
 export class MapProperty implements IProperty<Map<string, string> | null> {
     #value: Map<string, string> | null;
 
-    constructor(value: JSON) {
+    constructor(value: never | null) {
         if (_.isNull(value) || _.isEmpty(value)) {
             this.#value = null;
         } else {

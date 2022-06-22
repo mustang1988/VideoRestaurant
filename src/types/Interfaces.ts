@@ -93,17 +93,50 @@ export interface IMediaFormat {
 }
 
 export interface IMediaStream {
-    getDuration(): number;
+    getIndex(): IProperty<number | null>;
+    getCodecName(): IProperty<string | null>;
+    getCodecLongName(): IProperty<string | null>;
+    getProfile(): IProperty<string | null>;
+    getCodecTagString(): IProperty<string | null>;
+    getCodecTag(): IProperty<string | null>;
+    getRFrameRate(): IProperty<IRatio | null>;
+    getAvgFrameRate(): IProperty<IRatio | null>;
+    getTimeBase(): IProperty<IRatio | null>;
+    getStartPTS(): IProperty<number | null>;
+    getStartTime(): IProperty<number | null>;
+    getDurationTS(): IProperty<number | null>;
+    getDuration(): IProperty<number | null>;
+    getBitRate(): IProperty<number | null>;
+    getNbFrames(): IProperty<number | null>;
+    getDisposition(): IProperty<Map<string, string> | null>;
+    getTags(): IProperty<Map<string, string> | null>;
 }
 
 export interface IMediaVideoStream extends IMediaStream {
-    // TODO
-    getWidth(): number;
+    getWidth(): IProperty<number | null>;
+    getHeight(): IProperty<number | null>;
+    getCodedWidth(): IProperty<number | null>;
+    getCodedHeight(): IProperty<number | null>;
+    getClosedCaptions(): IProperty<string | null>;
+    getHasBFrames(): IProperty<number | null>;
+    getSampleAspectRatio(): IProperty<IRatio | null>;
+    getDisplayAspectRatio(): IProperty<IRatio | null>;
+    getPixFmt(): IProperty<string | null>;
+    getLevel(): IProperty<number | null>;
+    getColorRange(): IProperty<string | null>;
+    getColorSpace(): IProperty<string | null>;
+    getColorTransfer(): IProperty<string | null>;
+    getColorPrimaries(): IProperty<string | null>;
+    getChromaLocation(): IProperty<string | null>;
+    getRefs(): IProperty<number | null>;
 }
 
 export interface IMediaAudioStream extends IMediaStream {
-    // TODO
-    getSampleRate(): number;
+    getSampleFmt(): IProperty<string | null>;
+    getSampleRate(): IProperty<number | null>;
+    getChannels(): IProperty<number | null>;
+    getChannelLayout(): IProperty<string | null>;
+    getBitsPerSample(): IProperty<number | null>;
 }
 
 export interface IRatio {
@@ -118,7 +151,11 @@ export interface IFFmpeg {
 }
 
 export interface IFFprobe {
-    // TODO
+    v(log_level: string): IFFprobe;
+    of(format: string): IFFprobe;
+    i(input: string): IFFprobe;
+    showStreams(flag: boolean): IFFprobe;
+    showForamt(flag: boolean): IFFprobe;
     execute(): Promise<IMedia>;
     executeSync(): IMedia;
 }
@@ -129,6 +166,7 @@ export interface IOption<T> {
     getConflicts(): string[];
     getPriority(): number;
     toString(): string;
+    toArray(): string[];
 }
 
 export interface IProperty<T> {
