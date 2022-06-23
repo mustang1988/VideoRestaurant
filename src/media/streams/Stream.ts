@@ -24,7 +24,7 @@ export class Stream implements IMediaStream {
     #disposition: IProperty<Map<string, string> | null>;
     #tags: IProperty<Map<string, string> | null>;
 
-    constructor(metadata: never) {
+    constructor(metadata: unknown) {
         this.#index = new NumberProperty(_.get(metadata, 'index', null));
         this.#codec_name = new StringProperty(
             _.get(metadata, 'codec_name', null)

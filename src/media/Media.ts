@@ -6,9 +6,9 @@ import { MediaStreams } from './MediaStreams';
 export class Media implements IMedia {
     #streams: IMediaStreams | null;
     #format: IMediaFormat | null;
-    #metadata: never;
+    #metadata: unknown;
 
-    constructor(metadata: never) {
+    constructor(metadata: unknown) {
         const format_metadata = _.get(metadata, 'format', null);
         this.#format = _.isNull(format_metadata)
             ? null
@@ -19,8 +19,8 @@ export class Media implements IMedia {
             : new MediaStreams(streams_metadata);
         this.#metadata = metadata;
     }
-    
-    getMetadata(): never {
+
+    getMetadata(): unknown {
         return this.#metadata;
     }
 

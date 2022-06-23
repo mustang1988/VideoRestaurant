@@ -11,21 +11,21 @@ export class MediaStreams implements IMediaStreams {
     #video_stream: IMediaVideoStream | null;
     #audio_stream: IMediaAudioStream | null;
 
-    constructor(metadata: never) {
+    constructor(metadata: unknown) {
         this.#video_stream = null;
         this.#audio_stream = null;
         const video_stream_metadata = _.find(
-            metadata,
+            metadata as object,
             (data) => _.get(data, 'codec_type') === 'video'
-        ) as never;
+        ) as unknown;
         this.#video_stream = _.isNil(video_stream_metadata)
             ? null
             : new MediaVideoStream(video_stream_metadata);
 
         const audio_stream_metadata = _.find(
-            metadata,
+            metadata as object,
             (data) => _.get(data, 'codec_type') === 'audio'
-        ) as never;
+        ) as unknown;
         this.#audio_stream = _.isNil(audio_stream_metadata)
             ? null
             : new MediaAudioStream(audio_stream_metadata);

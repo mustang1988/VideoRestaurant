@@ -87,7 +87,7 @@ export interface IMedia {
     /**
      * Get media metadata which is given by ffprobe
      */
-    getMetadata(): never;
+    getMetadata(): unknown;
 }
 
 export interface IMediaStreams {

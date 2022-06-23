@@ -23,7 +23,7 @@ export class MediaVideoStream extends Stream implements IMediaVideoStream {
     #chroma_location: IProperty<string | null>;
     #refs: IProperty<number | null>;
 
-    constructor(metadata: never) {
+    constructor(metadata: unknown) {
         super(metadata);
         this.#width = new NumberProperty(_.get(metadata, 'width', null));
         this.#height = new NumberProperty(_.get(metadata, 'height', null));

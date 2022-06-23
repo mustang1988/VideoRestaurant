@@ -11,7 +11,7 @@ export class MediaAudioStream extends Stream implements IMediaAudioStream {
     #channel_layout: IProperty<string | null>;
     #bits_per_sample: IProperty<number | null>;
 
-    constructor(metadata: never) {
+    constructor(metadata: unknown) {
         super(metadata);
         this.#sample_fmt = new StringProperty(
             _.get(metadata, 'sample_fmt', null)

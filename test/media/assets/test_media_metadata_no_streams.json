@@ -1,0 +1,20 @@
+{
+    "format": {
+        "filename": "Sony Swordsmith HDR UHD 4K Demo.mp4",
+        "nb_streams": 2,
+        "nb_programs": 0,
+        "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+        "format_long_name": "QuickTime / MOV",
+        "start_time": "0.000000",
+        "duration": "86.101333",
+        "size": "770255991",
+        "bit_rate": "71567392",
+        "probe_score": 100,
+        "tags": {
+            "major_brand": "isom",
+            "minor_version": "1",
+            "compatible_brands": "isom",
+            "creation_time": "2016-10-24T05:33:14.000000Z"
+        }
+    }
+}
