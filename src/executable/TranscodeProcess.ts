@@ -4,18 +4,20 @@ import { writeFileSync } from 'fs';
 
 export class TranscodeProcess implements IProcessable {
     #ffmpeg: IFFmpeg;
-    #ps: ChildProcess;
-    #log: string;
+    #ps: ChildProcess | null;
     #stdstr = '';
     #current = 0;
     #total = 0;
 
     constructor(ffmpeg: IFFmpeg) {
         this.#ffmpeg = ffmpeg;
-        this.#log = ''; // TODO
+        this.#ps = null;
     }
 
     run(): void {
+        // Calcute how many frames will tanscode
+        this.#total = this.#totalFrameCalcute();
+        // Start transcode proces
         this.#ps = spawn(
             this.#ffmpeg.getBin(),
             this.#ffmpeg.getOptions().toArray()
@@ -35,22 +37,44 @@ export class TranscodeProcess implements IProcessable {
                 );
             }
         });
-        this.#ps.on('error', (error) => {
-            console.error('onError => ', error);
-        });
+        // this.#ps.on('error', (error) => {
+        //     console.error('onError => ', error);
+        // });
         this.#ps.on('close', (code, signal) => {
-            console.info('onClose => ', {
-                id: this.#ffmpeg.getId(),
-                code,
-                signal,
-                stdout: this.#stdstr,
-            });
-            // write stdout into log file
-            writeFileSync(this.#log, this.#stdstr);
+            this.#onFinishi(code, signal);
         });
     }
 
-    getProcess(): number {
+    getProgress(): number {
         return this.#total === 0 ? 0 : this.#current / this.#total;
+    }
+
+    getProcess(): ChildProcess | null {
+        return this.#ps;
+    }
+
+    getStdout(): string {
+        return this.#stdstr;
+    }
+
+    #totalFrameCalcute(): number {
+        // TODO
+        return 0;
+    }
+
+    #onFinishi(code: number | null, signal: NodeJS.Signals | null): void {
+        // TODO
+        console.info('onClose => ', {
+            id: this.#ffmpeg.getId(),
+            code,
+            signal,
+            stdout: this.#stdstr,
+        });
+        this.#writeLogFile();
+    }
+
+    #writeLogFile(): void {
+        // TODO
+        // writeFileSync(this.#log, this.#stdstr);
     }
 }

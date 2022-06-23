@@ -1,4 +1,5 @@
 // interface defines
+import { ChildProcess } from 'child_process';
 import { EJobResult, EMessageType, ENodeStatus } from './Enums';
 
 // super interface of WebSocket message between Chef and Assistant
@@ -70,9 +71,19 @@ export interface IProcessable {
      */
     run(): void;
     /**
-     * Get current job's process
+     * Get current job's progress percent
      */
-    getProcess(): number;
+    getProgress(): number;
+
+    /**
+     * Get job process instance
+     */
+    getProcess(): ChildProcess | null;
+
+    /**
+     * Get job process's stdout string
+     */
+    getStdout(): string;
 }
 
 export interface IMedia {
