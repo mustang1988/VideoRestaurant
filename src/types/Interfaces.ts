@@ -65,6 +65,7 @@ export interface IJobProcessResponseMessage extends IWebSocketMessage {
 }
 
 export interface IProcessable {
+    run(): void;
     getProcess(): number;
 }
 
@@ -146,6 +147,7 @@ export interface IRatio {
 }
 
 export interface IFFmpeg {
+    hide_banner(flag: boolean): IFFmpeg;
     v(log_level: string): IFFmpeg;
     i(input: string): IFFmpeg;
     threads(threads: number): IFFmpeg;
@@ -172,8 +174,11 @@ export interface IFFmpeg {
     ar(sample_rate: number): IFFmpeg;
     safe(flag: boolean): IFFmpeg;
     output(output: string): IFFmpeg;
-    execute(): Promise<IProcessable>;
-    executeSync(): IProcessable;
+    getId(): string;
+    getBin(): string;
+    getOptions(): ICommandOptions;
+    // execute(): Promise<IProcessable>;
+    execute(immediately?: boolean): IProcessable;
 }
 
 export interface IFFprobe {
@@ -197,4 +202,12 @@ export interface IOption<T> {
 
 export interface IProperty<T> {
     getValue(): T;
+}
+
+export interface ICommandOptions {
+    setOption(option: IOption<unknown>): void;
+    getOption(name: string): IOption<unknown> | undefined;
+    getOptions(): IOption<unknown>[];
+    toArray(): string[];
+    toString(): string;
 }

@@ -1,10 +1,12 @@
 import _ from 'lodash';
-import { IFFmpeg, IOption, IProcessable } from '../types/Interfaces';
+import { ICommandOptions, IFFmpeg, IProcessable } from '../types/Interfaces';
 import { FlagOption } from './options/FlagOption';
 import { RatioOption } from './options/RatioOption';
 import { StringOption } from './options/StringOption';
 import { Ratio } from './Ratio';
 import { cpus } from 'os';
+import { TranscodeProcess } from './TranscodeProcess';
+import { CommandOptions } from './options/CommandOptions';
 
 /**
  * ffmpeg
@@ -19,12 +21,16 @@ import { cpus } from 'os';
  *  <output options(10.x)>
  */
 export class FFmpeg implements IFFmpeg {
+    #id: string;
     #bin: string;
-    #args: IOption<unknown>[] = [];
+    #options: ICommandOptions;
 
-    constructor(bin?: string, input?: string, output?: string) {
+    constructor(id: string, bin?: string, input?: string, output?: string) {
+        this.#id = id;
         this.#bin = _.isNil(bin) ? 'ffmpeg' : bin;
-        this.v('0')
+        this.#options = new CommandOptions();
+        this.hide_banner(true)
+            .v('info')
             .threads(cpus().length / 2)
             .pix_fmt('yuv420p')
             .sn(true)
@@ -34,55 +40,80 @@ export class FFmpeg implements IFFmpeg {
         !_.isNil(output) && this.output(output);
     }
 
+    getId(): string {
+        return this.#id;
+    }
+
+    getBin(): string {
+        return this.#bin;
+    }
+
+    hide_banner(flag: boolean): IFFmpeg {
+        this.#options.setOption(new FlagOption('-hide_banner', flag, 0));
+        return this;
+    }
+
     v(log_level: string): IFFmpeg {
-        return this.#setOption(new StringOption('-v', log_level, 0));
+        this.#options.setOption(new StringOption('-v', log_level, 0));
+        return this;
     }
 
     i(input: string): IFFmpeg {
-        return this.#setOption(new StringOption('-i', input, 1));
+        this.#options.setOption(new StringOption('-i', input, 1));
+        return this;
     }
 
     threads(threads: number): IFFmpeg {
-        return this.#setOption(new StringOption('-threads', `${threads}`, 0.1));
+        this.#options.setOption(
+            new StringOption('-threads', `${threads}`, 0.1)
+        );
+        return this;
     }
 
     sn(flag: boolean): IFFmpeg {
-        return this.#setOption(new FlagOption('-sn', flag, 4));
+        this.#options.setOption(new FlagOption('-sn', flag, 4));
+        return this;
     }
 
     dn(flag: boolean): IFFmpeg {
-        return this.#setOption(new FlagOption('-dn', flag, 5));
+        this.#options.setOption(new FlagOption('-dn', flag, 5));
+        return this;
     }
 
     y(flag: boolean): IFFmpeg {
-        return this.#setOption(new FlagOption('-y', flag, 9));
+        this.#options.setOption(new FlagOption('-y', flag, 9));
+        return this;
     }
 
     g(gop: number): IFFmpeg {
-        return this.#setOption(new StringOption('-g', `${gop}`, 2));
+        this.#options.setOption(new StringOption('-g', `${gop}`, 2));
+        return this;
     }
 
     r(fps: string): IFFmpeg {
-        return this.#setOption(
+        this.#options.setOption(
             new RatioOption('-r', Ratio.parseRatio(fps), 2.1)
         );
+        return this;
     }
 
     pix_fmt(pix_fmt: string): IFFmpeg {
-        return this.#setOption(new StringOption('-pix_fmt', pix_fmt, 2.2));
+        this.#options.setOption(new StringOption('-pix_fmt', pix_fmt, 2.2));
+        return this;
     }
 
     c_v(codec: string): IFFmpeg {
-        // return this.#setOption(new StringOption('-c:v', codec, 2.3));
+        // this.#options.setOption(new StringOption('-c:v', codec, 2.3));
         return this.#setVideoCodecByDefault(codec);
     }
 
     b_v(bit_rate: number): IFFmpeg {
-        return this.#setOption(new StringOption('-b:v', `${bit_rate}`, 2.4));
+        this.#options.setOption(new StringOption('-b:v', `${bit_rate}`, 2.4));
+        return this;
     }
 
     preset(preset: string): IFFmpeg {
-        return this.#setOption(
+        this.#options.setOption(
             new StringOption('-preset', preset, 2.5, [
                 '-speed',
                 '-row-mt',
@@ -94,10 +125,11 @@ export class FFmpeg implements IFFmpeg {
                 'level',
             ])
         );
+        return this;
     }
 
     v_profile(profile: string): IFFmpeg {
-        return this.#setOption(
+        this.#options.setOption(
             new StringOption('-profile:v', profile, 2.6, [
                 '-speed',
                 '-row-mt',
@@ -109,139 +141,121 @@ export class FFmpeg implements IFFmpeg {
                 'level',
             ])
         );
+        return this;
     }
 
     speed(speed: number): IFFmpeg {
-        return this.#setOption(
+        this.#options.setOption(
             new StringOption('-speed', `${speed}`, 2.5, [
                 '-preset',
                 'profile:v',
             ])
         );
+        return this;
     }
 
     row_mt(flag: boolean): IFFmpeg {
-        return this.#setOption(
+        this.#options.setOption(
             new StringOption('-row-mt', flag ? '1' : '0', 2.6, [
                 '-preset',
                 'profile:v',
             ])
         );
+        return this;
     }
 
     frame_parallel(flag: boolean): IFFmpeg {
-        return this.#setOption(
+        this.#options.setOption(
             new StringOption('-frame-parallel', flag ? '1' : '0', 2.7, [
                 '-preset',
                 'profile:v',
             ])
         );
+        return this;
     }
 
     tile_columns(tile_columns: number): IFFmpeg {
-        return this.#setOption(
+        this.#options.setOption(
             new StringOption('-tile-columns', `${tile_columns}`, 2.8, [
                 '-preset',
                 'profile:v',
             ])
         );
+        return this;
     }
 
     quality(quality: string): IFFmpeg {
-        return this.#setOption(
+        this.#options.setOption(
             new StringOption('-quality', quality, 2.9, ['-preset', 'profile:v'])
         );
+        return this;
     }
 
     deadline(deadline: string): IFFmpeg {
-        return this.#setOption(
+        this.#options.setOption(
             new StringOption('-deadline', deadline, 2.9, [
                 '-preset',
                 'profile:v',
             ])
         );
+        return this;
     }
 
     cpu_used(cpu_used: number): IFFmpeg {
-        return this.#setOption(
+        this.#options.setOption(
             new StringOption('-cpu-used', `${cpu_used}`, 2.9, [
                 '-preset',
                 'profile:v',
             ])
         );
+        return this;
     }
 
     level(level: number): IFFmpeg {
-        return this.#setOption(
+        this.#options.setOption(
             new StringOption('-level', `${level}`, 2.9, [
                 '-preset',
                 'profile:v',
             ])
         );
-    }
-
-    c_a(codec: string): IFFmpeg {
-        return this.#setOption(new StringOption('-c:a', codec, 3));
-    }
-
-    b_a(bit_rate: number): IFFmpeg {
-        return this.#setOption(new StringOption('-b:a', `${bit_rate}`, 3.1));
-    }
-
-    ar(sample_rate: number): IFFmpeg {
-        return this.#setOption(new StringOption('-ar', `${sample_rate}`, 3.2));
-    }
-
-    safe(flag: boolean): IFFmpeg {
-        return this.#setOption(
-            new StringOption('-safe', flag ? '1' : '0', 0.1)
-        );
-    }
-
-    output(output: string): IFFmpeg {
-        return this.#setOption(new StringOption('', output, 10));
-    }
-
-    execute(): Promise<IProcessable> {
-        console.log('execute(): ', this.#getCommand());
-        throw new Error('Method not implemented.');
-    }
-
-    executeSync(): IProcessable {
-        console.log('executeSync(): ', this.#getCommand());
-        throw new Error('Method not implemented.');
-    }
-
-    #setOption(option: IOption<unknown>): IFFmpeg {
-        // find existed option with the same name to given option
-        const option_has_been_set: IOption<unknown> | undefined = _.find(
-            this.#args,
-            (arg) => arg.getName() === option.getName()
-        );
-
-        if (!_.isNil(option_has_been_set)) {
-            // remove exists option in arg list
-            _.remove(this.#args, (arg) => arg.getName() === option.getName());
-        }
-        // remove conflicts options
-        _.remove(this.#args, (arg) =>
-            option.getConflicts().includes(arg.getName())
-        );
-        // set given option into arg list
-        this.#args.push(option);
         return this;
     }
 
-    #getCommand(): string[] {
-        const arr: string[] = [this.#bin];
-        // sort args by priority
-        this.#args.sort(
-            (arg1, arg2) => arg1.getPriority() - arg2.getPriority()
+    c_a(codec: string): IFFmpeg {
+        this.#options.setOption(new StringOption('-c:a', codec, 3));
+        return this;
+    }
+
+    b_a(bit_rate: number): IFFmpeg {
+        this.#options.setOption(new StringOption('-b:a', `${bit_rate}`, 3.1));
+        return this;
+    }
+
+    ar(sample_rate: number): IFFmpeg {
+        this.#options.setOption(new StringOption('-ar', `${sample_rate}`, 3.2));
+        return this;
+    }
+
+    safe(flag: boolean): IFFmpeg {
+        this.#options.setOption(
+            new StringOption('-safe', flag ? '1' : '0', 0.1)
         );
-        this.#args.map((arg) => {
-            arr.push(...arg.toArray());
-        });
-        return arr;
+        return this;
+    }
+
+    output(output: string): IFFmpeg {
+        this.#options.setOption(new StringOption('', output, 10));
+        return this;
+    }
+
+    getOptions(): ICommandOptions {
+        return this.#options;
+    }
+
+    execute(immediately = true): IProcessable {
+        const process = new TranscodeProcess(this);
+        immediately && process.run();
+        return process;
     }
 
     #setVideoCodecByDefault(codec: string): IFFmpeg {
@@ -257,7 +271,7 @@ export class FFmpeg implements IFFmpeg {
             'libvpx', // VP8 codec
             'libvpx-vp9', // VP9 codec
         ];
-        this.#setOption(new StringOption('-c:v', codec, 2.3));
+        this.#options.setOption(new StringOption('-c:v', codec, 2.3));
         if (h26x_codecs.includes(codec)) {
             this.preset('ultrafast').v_profile('high');
         } else if (vpx_codecs.includes(codec)) {

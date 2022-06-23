@@ -1,9 +1,10 @@
 import _ from 'lodash';
-import { IFFprobe, IMedia, IOption } from '../types/Interfaces';
+import { ICommandOptions, IFFprobe, IMedia } from '../types/Interfaces';
 import { FlagOption } from './options/FlagOption';
 import { StringOption } from './options/StringOption';
 import { exec, execSync } from 'child_process';
 import { Media } from '../media/Media';
+import { CommandOptions } from './options/CommandOptions';
 
 /**
  * ffprobe
@@ -12,77 +13,60 @@ import { Media } from '../media/Media';
  */
 export class FFprobe implements IFFprobe {
     #bin: string;
-    #args: IOption<unknown>[] = [];
+    #options: ICommandOptions;
 
     constructor(bin?: string, input?: string) {
         this.#bin = _.isNil(bin) ? 'ffprobe' : bin;
+        this.#options = new CommandOptions();
         // set "-v 0 -of json=c=1 -show_streams -show_format" by default
         this.v('0').of('json=c=1').showStreams(true).showForamt(true);
         !_.isNil(input) && this.i(input);
     }
 
     v(log_level: string): IFFprobe {
-        return this.#setOption(new StringOption('-v', log_level, 0));
-    }
-
-    of(format: string): IFFprobe {
-        return this.#setOption(new StringOption('-of', format, 1));
-    }
-
-    i(input: string): IFFprobe {
-        return this.#setOption(new StringOption('-i', input, 10));
-    }
-
-    showStreams(flag: boolean): IFFprobe {
-        return this.#setOption(new FlagOption('-show_streams', flag, 2));
-    }
-
-    showForamt(flag: boolean): IFFprobe {
-        return this.#setOption(new FlagOption('-show_format', flag, 3));
-    }
-
-    #setOption(option: IOption<unknown>): IFFprobe {
-        // find existed option with the same name to given option
-        const option_has_been_set: IOption<unknown> | undefined = _.find(
-            this.#args,
-            (arg) => arg.getName() === option.getName()
-        );
-
-        if (!_.isNil(option_has_been_set)) {
-            // remove exists option in arg list
-            _.remove(this.#args, (arg) => arg.getName() === option.getName());
-        }
-        // set given option into arg list
-        this.#args.push(option);
+        this.#options.setOption(new StringOption('-v', log_level, 0));
         return this;
     }
 
-    #getCommand(): string[] {
-        const arr: string[] = [this.#bin];
-        // sort args by priority
-        this.#args.sort(
-            (arg1, arg2) => arg1.getPriority() - arg2.getPriority()
-        );
-        this.#args.map((arg) => {
-            arr.push(...arg.toArray());
-        });
-        return arr;
+    of(format: string): IFFprobe {
+        this.#options.setOption(new StringOption('-of', format, 1));
+        return this;
+    }
+
+    i(input: string): IFFprobe {
+        this.#options.setOption(new StringOption('-i', input, 10));
+        return this;
+    }
+
+    showStreams(flag: boolean): IFFprobe {
+        this.#options.setOption(new FlagOption('-show_streams', flag, 2));
+        return this;
+    }
+
+    showForamt(flag: boolean): IFFprobe {
+        this.#options.setOption(new FlagOption('-show_format', flag, 3));
+        return this;
     }
 
     execute(): Promise<IMedia> {
         return new Promise((resolve, reject) => {
-            exec(this.#getCommand().join(' '), (error, stdout, stderr) => {
-                if (error) {
-                    reject({ error, stderr, stdout });
+            exec(
+                [this.#bin, this.#options.toArray()].join(' '),
+                (error, stdout, stderr) => {
+                    if (error) {
+                        reject({ error, stderr, stdout });
+                    }
+                    const metadata = JSON.parse(stdout);
+                    resolve(new Media(metadata as never));
                 }
-                const metadata = JSON.parse(stdout);
-                resolve(new Media(metadata as never));
-            });
+            );
         });
     }
 
     executeSync(): IMedia {
-        const stdout: Buffer = execSync(this.#getCommand().join(' '));
+        const stdout: Buffer = execSync(
+            [this.#bin, this.#options.toArray()].join(' ')
+        );
         const metadata = JSON.parse(stdout.toString('utf8'));
         return new Media(metadata as never);
     }
