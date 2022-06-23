@@ -1,91 +1,91 @@
 import { describe, it } from 'mocha';
 import assert from 'assert';
 import { Media } from '../../src/media/Media';
-import test_media_metadata from './assets/test_media_metadata.json';
+import mock_media from './assets/mock_media.json';
 
 describe('MediaFormat.ts', () => {
     it('getFilename()', () => {
-        const media = new Media(test_media_metadata as unknown);
+        const media = new Media(mock_media as unknown);
         assert.deepEqual(
             media.getFormat()?.getFilename().getValue(),
-            test_media_metadata.format.filename
+            mock_media.format.filename
         );
     });
 
     it('getNbStreams()', () => {
-        const media = new Media(test_media_metadata as unknown);
+        const media = new Media(mock_media as unknown);
         assert.equal(
             media.getFormat()?.getNbStreams().getValue(),
-            test_media_metadata.format.nb_streams
+            mock_media.format.nb_streams
         );
     });
 
     it('getNbPrograms()', () => {
-        const media = new Media(test_media_metadata as unknown);
+        const media = new Media(mock_media as unknown);
         assert.equal(
             media.getFormat()?.getNbPrograms().getValue(),
-            test_media_metadata.format.nb_programs
+            mock_media.format.nb_programs
         );
     });
 
     it('getFormatName()', () => {
-        const media = new Media(test_media_metadata as unknown);
+        const media = new Media(mock_media as unknown);
         assert.equal(
             media.getFormat()?.getFormatName().getValue(),
-            test_media_metadata.format.format_name
+            mock_media.format.format_name
         );
     });
 
     it('getFormatLongName()', () => {
-        const media = new Media(test_media_metadata as unknown);
+        const media = new Media(mock_media as unknown);
         assert.equal(
             media.getFormat()?.getFormatLongName().getValue(),
-            test_media_metadata.format.format_long_name
+            mock_media.format.format_long_name
         );
     });
 
     it('getStartTime()', () => {
-        const media = new Media(test_media_metadata as unknown);
+        const media = new Media(mock_media as unknown);
         assert.equal(
             media.getFormat()?.getStartTime().getValue(),
-            test_media_metadata.format.start_time
+            mock_media.format.start_time
         );
     });
 
     it('getDuration()', () => {
-        const media = new Media(test_media_metadata as unknown);
+        const media = new Media(mock_media as unknown);
         assert.equal(
             media.getFormat()?.getDuration().getValue(),
-            test_media_metadata.format.duration
+            mock_media.format.duration
         );
     });
 
     it('getSize()', () => {
-        const media = new Media(test_media_metadata as unknown);
+        const media = new Media(mock_media as unknown);
         assert.equal(
             media.getFormat()?.getSize().getValue(),
-            test_media_metadata.format.size
+            mock_media.format.size
         );
     });
 
     it('getBitRate()', () => {
-        const media = new Media(test_media_metadata as unknown);
+        const media = new Media(mock_media as unknown);
         assert.equal(
             media.getFormat()?.getBitRate().getValue(),
-            test_media_metadata.format.bit_rate
+            mock_media.format.bit_rate
         );
     });
 
     it('getProbScore()', () => {
-        const media = new Media(test_media_metadata as unknown);
+        const media = new Media(mock_media as unknown);
         assert.equal(
             media.getFormat()?.getProbScore().getValue(),
-            test_media_metadata.format.probe_score
+            mock_media.format.probe_score
         );
     });
 
     it('getTags()', () => {
-        const media = new Media(test_media_metadata as unknown);
+        const media = new Media(mock_media as unknown);
         const tags: Map<string, string> | null | undefined = media
             .getFormat()
             ?.getTags()
@@ -94,7 +94,7 @@ describe('MediaFormat.ts', () => {
         assert.notEqual(tags, null);
         assert.deepEqual(
             Object.fromEntries(tags as Map<string, string>),
-            test_media_metadata.format.tags
+            mock_media.format.tags
         );
     });
 });

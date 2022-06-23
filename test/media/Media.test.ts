@@ -1,9 +1,9 @@
 import { describe, it } from 'mocha';
 import assert from 'assert';
 import { Media } from '../../src/media/Media';
-import test_metadata from './assets/test_media_metadata.json';
-import test_metadata_without_streams from './assets/test_media_metadata_no_streams.json';
-import test_metadata_without_format from './assets/test_media_metadata_no_format.json';
+import test_metadata from './assets/mock_media.json';
+import test_metadata_without_streams from './assets/mock_media_without_streams.json';
+import test_metadata_without_format from './assets/mock_media_without_format.json';
 
 describe('Media.ts', () => {
     it('getStreams()', () => {
