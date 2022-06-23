@@ -1,27 +1,74 @@
 import { describe, it } from 'mocha';
 import assert from 'assert';
 import { FFprobe } from '../../src/executable/FFprobe';
+import path from 'path';
 
 describe('FFprobe.ts', () => {
-    it.skip('v(log_level: string)', () => {
-        console.error('TODO add test case');
+    it('constructor', () => {
+        const bin = 'ffprobe';
+        const input = path.join(__dirname, 'assets', 'test.mp4');
+        const ffprobe = new FFprobe(bin, input);
+        assert.deepEqual(ffprobe.getBin(), bin);
+        assert.deepEqual(ffprobe.getOptions().get('-i')?.getValue(), input);
     });
-    it.skip('of(format: string)', () => {
-        console.error('TODO add test case');
+
+    it('v()', () => {
+        const log_level = '1';
+        const ffprobe = new FFprobe().v(log_level);
+        assert.deepEqual(ffprobe.getOptions().get('-v')?.getValue(), log_level);
     });
-    it.skip('i(input: string)', () => {
-        console.error('TODO add test case');
+
+    it('of()', () => {
+        const print_format = 'csv';
+        const ffprobe = new FFprobe().of(print_format);
+        assert.deepEqual(
+            ffprobe.getOptions().get('-of')?.getValue(),
+            print_format
+        );
     });
-    it.skip('showStreams(flag: boolean)', () => {
-        console.error('TODO add test case');
+
+    it('i()', () => {
+        const input = path.join(__dirname, 'assets', 'test.mp4');
+        const ffprobe = new FFprobe().i(input);
+        assert.deepEqual(ffprobe.getOptions().get('-i')?.getValue(), input);
     });
-    it.skip('showForamt(flag: boolean)', () => {
-        console.error('TODO add test case');
+
+    it('showStreams()', () => {
+        const flag = true;
+        const ffprobe = new FFprobe().showStreams(flag);
+        assert.deepEqual(
+            ffprobe.getOptions().get('-show_streams')?.getValue(),
+            flag
+        );
     });
-    it.skip('execute()', () => {
-        console.error('TODO add test case');
+
+    it('showForamt()', () => {
+        const flag = true;
+        const ffprobe = new FFprobe().showForamt(flag);
+        assert.deepEqual(
+            ffprobe.getOptions().get('-show_format')?.getValue(),
+            flag
+        );
     });
-    it.skip('executeSync()', () => {
-        console.error('TODO add test case');
+
+    it('execute()', () => {
+        const bin = 'ffprobe';
+        const input = path.join(__dirname, 'assets', 'test.mp4');
+        const ffprobe = new FFprobe(bin, input);
+        assert.notDeepEqual(ffprobe.execute(), null);
+    });
+
+    it('execute(): failed', () => {
+        const bin = 'ffprobe';
+        const input = path.join(__dirname, 'assets', 'a.mp4');
+        const ffprobe = new FFprobe(bin, input);
+        assert.notDeepEqual(ffprobe.execute(), null);
+    });
+
+    it('executeSync()', () => {
+        const bin = 'ffprobe';
+        const input = path.join(__dirname, 'assets', 'test.mp4');
+        const ffprobe = new FFprobe(bin, input);
+        assert.notDeepEqual(ffprobe.executeSync(), null);
     });
 });

@@ -11,6 +11,14 @@ export class CommandOptions implements ICommandOptions {
             .#sortOptionsByPriority();
     }
 
+    length(): number {
+        return this.#options.length;
+    }
+
+    get(name: string): IOption<unknown> | undefined {
+        return _.find(this.#options, (opt) => opt.getName() === name);
+    }
+
     toArray(): string[] {
         return _(this.#options)
             .map((opt) => opt.toArray()) // to format => [[name1, value1], [name2, value2], ...]

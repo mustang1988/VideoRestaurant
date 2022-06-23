@@ -48,10 +48,18 @@ export class FFprobe implements IFFprobe {
         return this;
     }
 
+    getBin(): string {
+        return this.#bin;
+    }
+
+    getOptions(): ICommandOptions {
+        return this.#options;
+    }
+
     execute(): Promise<IMedia> {
         return new Promise((resolve, reject) => {
             exec(
-                [this.#bin, this.#options.toArray()].join(' '),
+                [this.#bin, ...this.#options.toArray()].join(' '),
                 (error, stdout, stderr) => {
                     if (error) {
                         reject({ error, stderr, stdout });
@@ -65,7 +73,7 @@ export class FFprobe implements IFFprobe {
 
     executeSync(): IMedia {
         const stdout: Buffer = execSync(
-            [this.#bin, this.#options.toArray()].join(' ')
+            [this.#bin, ...this.#options.toArray()].join(' ')
         );
         const metadata = JSON.parse(stdout.toString('utf8'));
         return new Media(metadata as never);
