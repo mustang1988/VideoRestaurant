@@ -7,9 +7,10 @@ export class RatioOption extends Option<IRatio | null> {
         name: string,
         value: IRatio | null,
         priority = 0,
-        conflicts: string[] = []
+        conflicts: string[] = [],
+        unique = true
     ) {
-        super(name, value, priority, conflicts);
+        super(name, value, priority, conflicts, unique);
     }
 
     toString(): string {

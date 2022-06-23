@@ -6,9 +6,10 @@ export class StringOption extends Option<string> {
         name: string,
         value: string,
         priority = 0,
-        conflicts: string[] = []
+        conflicts: string[] = [],
+        unique = true
     ) {
-        super(name, value, priority, conflicts);
+        super(name, value, priority, conflicts, unique);
     }
 
     toString(): string {

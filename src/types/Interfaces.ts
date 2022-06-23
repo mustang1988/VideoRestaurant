@@ -198,6 +198,7 @@ export interface IOption<T> {
     getPriority(): number;
     toString(): string;
     toArray(): string[];
+    isUnique(): boolean;
 }
 
 export interface IProperty<T> {
@@ -206,8 +207,6 @@ export interface IProperty<T> {
 
 export interface ICommandOptions {
     setOption(option: IOption<unknown>): void;
-    getOption(name: string): IOption<unknown> | undefined;
-    getOptions(): IOption<unknown>[];
     toArray(): string[];
     toString(): string;
 }

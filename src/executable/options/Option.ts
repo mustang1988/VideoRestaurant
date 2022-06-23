@@ -5,11 +5,19 @@ export abstract class Option<T> implements IOption<T> {
     #value: T;
     #priority: number;
     #conflicts: string[];
-    constructor(name: string, value: T, priority: number, conflicts: string[]) {
+    #unique: boolean;
+    constructor(
+        name: string,
+        value: T,
+        priority: number,
+        conflicts: string[],
+        unique: boolean
+    ) {
         this.#name = name;
         this.#value = value;
         this.#priority = priority;
         this.#conflicts = conflicts;
+        this.#unique = unique;
     }
 
     getName(): string {
@@ -26,6 +34,10 @@ export abstract class Option<T> implements IOption<T> {
 
     getPriority(): number {
         return this.#priority;
+    }
+
+    isUnique(): boolean {
+        return this.#unique;
     }
 
     abstract toString(): string;

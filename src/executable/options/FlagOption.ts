@@ -5,9 +5,10 @@ export class FlagOption extends Option<boolean> {
         name: string,
         value: boolean,
         priority = 0,
-        conflicts: string[] = []
+        conflicts: string[] = [],
+        unique = true
     ) {
-        super(name, value, priority, conflicts);
+        super(name, value, priority, conflicts, unique);
     }
 
     toString(): string {
