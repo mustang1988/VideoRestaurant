@@ -43,7 +43,7 @@ export class Stream implements IMediaStream {
             _.get(metadata, 'r_frame_rate', null)
         );
         this.#avg_frame_rate = new RatioProperty(
-            _.get(metadata, 'abg_frame_rate', null)
+            _.get(metadata, 'avg_frame_rate', null)
         );
         this.#time_base = new RatioProperty(_.get(metadata, 'time_base', null));
         this.#start_pts = new NumberProperty(

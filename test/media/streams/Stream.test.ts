@@ -1,39 +1,168 @@
 import { describe, it } from 'mocha';
 import assert from 'assert';
-import { Stream } from '../../../src/media/streams/Stream';
+import { Media } from '../../../src/media/Media';
+import test_media_metadata from '../assets/test_media_metadata.json';
 
 describe('Stream.ts', () => {
-    it.skip('getIndex()', () => {});
+    it('getIndex()', () => {
+        const media = new Media(test_media_metadata as unknown);
+        assert.equal(
+            media.getStreams()?.getVideoStream()?.getIndex().getValue(),
+            test_media_metadata.streams[0].index
+        );
+    });
 
-    it.skip('getCodecName()', () => {});
+    it('getCodecName()', () => {
+        const media = new Media(test_media_metadata as unknown);
+        assert.equal(
+            media.getStreams()?.getVideoStream()?.getCodecName().getValue(),
+            test_media_metadata.streams[0].codec_name
+        );
+    });
 
-    it.skip('getCodecLongName()', () => {});
+    it('getCodecLongName()', () => {
+        const media = new Media(test_media_metadata as unknown);
+        assert.equal(
+            media.getStreams()?.getVideoStream()?.getCodecLongName().getValue(),
+            test_media_metadata.streams[0].codec_long_name
+        );
+    });
 
-    it.skip('getProfile()', () => {});
+    it('getProfile()', () => {
+        const media = new Media(test_media_metadata as unknown);
+        assert.equal(
+            media.getStreams()?.getVideoStream()?.getProfile().getValue(),
+            test_media_metadata.streams[0].profile
+        );
+    });
 
-    it.skip('getCodecTagString()', () => {});
+    it('getCodecTagString()', () => {
+        const media = new Media(test_media_metadata as unknown);
+        assert.equal(
+            media
+                .getStreams()
+                ?.getVideoStream()
+                ?.getCodecTagString()
+                .getValue(),
+            test_media_metadata.streams[0].codec_tag_string
+        );
+    });
 
-    it.skip('getCodecTag()', () => {});
+    it('getCodecTag()', () => {
+        const media = new Media(test_media_metadata as unknown);
+        assert.equal(
+            media.getStreams()?.getVideoStream()?.getCodecTag().getValue(),
+            test_media_metadata.streams[0].codec_tag
+        );
+    });
 
-    it.skip('getRFrameRate()', () => {});
+    it('getRFrameRate()', () => {
+        const media = new Media(test_media_metadata as unknown);
+        assert.equal(
+            media
+                .getStreams()
+                ?.getVideoStream()
+                ?.getRFrameRate()
+                .getValue()
+                ?.toString(),
+            test_media_metadata.streams[0].r_frame_rate
+        );
+    });
 
-    it.skip('getAvgFrameRate()', () => {});
+    it('getAvgFrameRate()', () => {
+        const media = new Media(test_media_metadata as unknown);
+        assert.equal(
+            media
+                .getStreams()
+                ?.getVideoStream()
+                ?.getAvgFrameRate()
+                .getValue()
+                ?.toString(),
+            test_media_metadata.streams[0].avg_frame_rate
+        );
+    });
 
-    it.skip('getTimeBase()', () => {});
+    it('getTimeBase()', () => {
+        const media = new Media(test_media_metadata as unknown);
+        assert.equal(
+            media
+                .getStreams()
+                ?.getVideoStream()
+                ?.getTimeBase()
+                .getValue()
+                ?.toString(),
+            test_media_metadata.streams[0].time_base
+        );
+    });
 
-    it.skip('getStartPTS()', () => {});
+    it('getStartPTS()', () => {
+        const media = new Media(test_media_metadata as unknown);
+        assert.equal(
+            media.getStreams()?.getVideoStream()?.getStartPTS().getValue(),
+            test_media_metadata.streams[0].start_pts
+        );
+    });
 
-    it.skip('getStartTime()', () => {});
+    it('getStartTime()', () => {
+        const media = new Media(test_media_metadata as unknown);
+        assert.equal(
+            media.getStreams()?.getVideoStream()?.getStartTime().getValue(),
+            test_media_metadata.streams[0].start_time
+        );
+    });
 
-    it.skip('getDurationTS()', () => {});
+    it('getDurationTS()', () => {
+        const media = new Media(test_media_metadata as unknown);
+        assert.equal(
+            media.getStreams()?.getVideoStream()?.getDurationTS().getValue(),
+            test_media_metadata.streams[0].duration_ts
+        );
+    });
 
-    it.skip('getDuration()', () => {});
+    it('getDuration()', () => {
+        const media = new Media(test_media_metadata as unknown);
+        assert.equal(
+            media.getStreams()?.getVideoStream()?.getDuration().getValue(),
+            test_media_metadata.streams[0].duration
+        );
+    });
 
-    it.skip('getBitRate()', () => {});
+    it('getBitRate()', () => {
+        const media = new Media(test_media_metadata as unknown);
+        assert.equal(
+            media.getStreams()?.getVideoStream()?.getBitRate().getValue(),
+            test_media_metadata.streams[0].bit_rate
+        );
+    });
 
-    it.skip('getNbFrames()', () => {});
+    it('getNbFrames()', () => {
+        const media = new Media(test_media_metadata as unknown);
+        assert.equal(
+            media.getStreams()?.getVideoStream()?.getNbFrames().getValue(),
+            test_media_metadata.streams[0].nb_frames
+        );
+    });
 
-    it.skip('getDisposition()', () => {});
+    it('getDisposition()', () => {
+        const media = new Media(test_media_metadata as unknown);
+        const disposition = Object.fromEntries(
+            media
+                .getStreams()
+                ?.getVideoStream()
+                ?.getDisposition()
+                .getValue() as Map<string, string>
+        );
+        assert.deepEqual(disposition, test_media_metadata.streams[0].disposition);
+    });
 
-    it.skip('getTags()', () => {});
+    it('getTags()', () => {
+        const media = new Media(test_media_metadata as unknown);
+        const disposition = Object.fromEntries(
+            media.getStreams()?.getVideoStream()?.getTags().getValue() as Map<
+                string,
+                string
+            >
+        );
+        assert.deepEqual(disposition, test_media_metadata.streams[0].tags);
+    });
 });

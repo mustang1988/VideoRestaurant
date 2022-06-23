@@ -1,15 +1,46 @@
 import { describe, it } from 'mocha';
 import assert from 'assert';
-import { MediaAudioStream } from '../../../src/media/streams/MediaAudioStream';
+import { Media } from '../../../src/media/Media';
+import test_media_metadata from '../assets/test_media_metadata.json';
 
 describe('MediaAudioStream.ts', () => {
-    it.skip('getSampleFmt()', () => {});
+    it('getSampleFmt()', () => {
+        const media = new Media(test_media_metadata as unknown);
+        assert.equal(
+            media.getStreams()?.getAudioStream()?.getSampleFmt().getValue(),
+            test_media_metadata.streams[1].sample_fmt
+        );
+    });
 
-    it.skip('getSampleRate()', () => {});
+    it('getSampleRate()', () => {
+        const media = new Media(test_media_metadata as unknown);
+        assert.equal(
+            media.getStreams()?.getAudioStream()?.getSampleRate().getValue(),
+            test_media_metadata.streams[1].sample_rate
+        );
+    });
 
-    it.skip('getChannels()', () => {});
+    it('getChannels()', () => {
+        const media = new Media(test_media_metadata as unknown);
+        assert.equal(
+            media.getStreams()?.getAudioStream()?.getChannels().getValue(),
+            test_media_metadata.streams[1].channels
+        );
+    });
 
-    it.skip('getChannelLayout()', () => {});
+    it('getChannelLayout()', () => {
+        const media = new Media(test_media_metadata as unknown);
+        assert.equal(
+            media.getStreams()?.getAudioStream()?.getChannelLayout().getValue(),
+            test_media_metadata.streams[1].channel_layout
+        );
+    });
 
-    it.skip('getBitsPerSample()', () => {});
+    it('getBitsPerSample()', () => {
+        const media = new Media(test_media_metadata as unknown);
+        assert.equal(
+            media.getStreams()?.getAudioStream()?.getBitsPerSample().getValue(),
+            test_media_metadata.streams[1].bits_per_sample
+        );
+    });
 });

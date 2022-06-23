@@ -40,10 +40,12 @@ export class MediaVideoStream extends Stream implements IMediaVideoStream {
             _.get(metadata, 'has_b_frames', null)
         );
         this.#sample_aspect_ratio = new RatioProperty(
-            _.get(metadata, 'sample_aspect_ratio', null)
+            _.get(metadata, 'sample_aspect_ratio', null),
+            ':'
         );
         this.#display_aspect_ratio = new RatioProperty(
-            _.get(metadata, 'display_aspect_ratio', null)
+            _.get(metadata, 'display_aspect_ratio', null),
+            ':'
         );
         this.#pix_fmt = new StringProperty(_.get(metadata, 'pix_fmt', null));
         this.#level = new NumberProperty(_.get(metadata, 'level', null));

@@ -5,8 +5,10 @@ import _ from 'lodash';
 export class RatioProperty implements IProperty<IRatio | null> {
     #value: IRatio | null;
 
-    constructor(value: string | null) {
-        this.#value = _.isNull(value) ? null : Ratio.parseRatio(value);
+    constructor(value: string | null, seperator?: string) {
+        this.#value = _.isNull(value)
+            ? null
+            : Ratio.parseRatio(value, seperator);
     }
 
     getValue(): IRatio | null {
