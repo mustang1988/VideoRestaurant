@@ -20,9 +20,9 @@ export class RatioOption extends Option<IRatio | null> {
     }
 
     toArray(): string[] {
+        const arr: string[] = [];
         const value = this.getValue();
-        return _.isNull(value)
-            ? []
-            : [this.getName(), value ? value.toString() : ''];
+        !_.isNull(value) && arr.push(...[this.getName(), value.toString()]);
+        return arr;
     }
 }

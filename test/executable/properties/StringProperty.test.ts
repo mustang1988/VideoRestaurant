@@ -1,6 +1,6 @@
 import { describe, it } from 'mocha';
 import assert from 'assert';
-import { StringProperty } from '../../../src/executable/properties/StringProperty';
+import { StringProperty } from '../../../src/media/properties/StringProperty';
 
 describe('StringProperty.ts', () => {
     it('constructor', () => {

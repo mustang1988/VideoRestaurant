@@ -1,10 +1,22 @@
 import { describe, it } from 'mocha';
 import assert from 'assert';
-import { NumberProperty } from '../../../src/executable/properties/NumberProperty';
+import { NumberProperty } from '../../../src/media/properties/NumberProperty';
 
 describe('NumberProperty.ts', () => {
     it('constructor', () => {
         const value = '10';
+        const property = new NumberProperty(value);
+        assert.notDeepEqual(property, null);
+    });
+
+    it('constructor: value is null', () => {
+        const value = null;
+        const property = new NumberProperty(value);
+        assert.notDeepEqual(property, null);
+    });
+
+    it('constructor: value is NaN', () => {
+        const value = '';
         const property = new NumberProperty(value);
         assert.notDeepEqual(property, null);
     });

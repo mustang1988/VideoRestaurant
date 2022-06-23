@@ -57,4 +57,13 @@ describe('StringOption.ts', () => {
         const option = new StringOption(name, value, priority, conflicts);
         assert.deepEqual(option.getPriority(), priority);
     });
+
+    it('toArray()', () => {
+        const name = '-c:v';
+        const value = 'libx264';
+        const priority = 10;
+        const conflicts: string[] = [];
+        const option = new StringOption(name, value, priority, conflicts);
+        assert.deepEqual(option.toArray(), [name, value]);
+    });
 });

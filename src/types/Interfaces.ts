@@ -65,18 +65,39 @@ export interface IJobProcessResponseMessage extends IWebSocketMessage {
 }
 
 export interface IProcessable {
+    /**
+     * Execute current job
+     */
     run(): void;
+    /**
+     * Get current job's process
+     */
     getProcess(): number;
 }
 
 export interface IMedia {
+    /**
+     * Get media streams infomation
+     */
     getStreams(): IMediaStreams | null;
+    /**
+     * Get media format information
+     */
     getFormat(): IMediaFormat | null;
+    /**
+     * Get media metadata which is given by ffprobe
+     */
     getMetadata(): never;
 }
 
 export interface IMediaStreams {
+    /**
+     * Get media video stream infomation
+     */
     getVideoStream(): IMediaVideoStream | null;
+    /**
+     * Get media audio stream information
+     */
     getAudioStream(): IMediaAudioStream | null;
 }
 
@@ -142,8 +163,16 @@ export interface IMediaAudioStream extends IMediaStream {
 }
 
 export interface IRatio {
-    toNumber(fixed: number): number;
-    toString(): string;
+    /**
+     * Transform a ratio to number
+     * @param fixed {number}
+     */
+    toNumber(fixed?: number): number;
+    /**
+     * Tranform a ratio to string foramt
+     * @param seperator {string} ratio seperator in result
+     */
+    toString(seperator?: string): string;
 }
 
 export interface IFFmpeg {

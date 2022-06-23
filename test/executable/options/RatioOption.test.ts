@@ -65,4 +65,22 @@ describe('RatioOption.ts', () => {
         const option = new RatioOption(name, value, priority, conflicts);
         assert.deepEqual(option.getPriority(), priority);
     });
+
+    it('toArray()', () => {
+        const name = '-r';
+        const value = Ratio.parseRatio('30000/1001');
+        const priority = 10;
+        const conflicts: string[] = [];
+        const option = new RatioOption(name, value, priority, conflicts);
+        assert.deepEqual(option.toArray(), [name, value?.toString()]);
+    });
+
+    it('toArray(): value is null', () => {
+        const name = '-r';
+        const value = null;
+        const priority = 10;
+        const conflicts: string[] = [];
+        const option = new RatioOption(name, value, priority, conflicts);
+        assert.deepEqual(option.toArray(), []);
+    });
 });

@@ -64,4 +64,28 @@ describe('FlagOption.ts', () => {
         const option = new FlagOption(name, value, priority, conflicts);
         assert.deepEqual(option.getPriority(), priority);
     });
+
+    it('toArray(): value is true', () => {
+        const name = '-show_streams';
+        const value = true;
+        const option = new FlagOption(name, value);
+        assert.deepEqual(option.toArray(), [name]);
+    });
+
+    it('toArray(): value is false', () => {
+        const name = '-show_streams';
+        const value = false;
+        const option = new FlagOption(name, value);
+        assert.deepEqual(option.toArray(), []);
+    });
+
+    it('isUnique()', () => {
+        const name = '-show_streams';
+        const value = false;
+        const priority = 0;
+        const conflicts: string[] = [];
+        const unique = true;
+        const option = new FlagOption(name, value, priority, conflicts, unique);
+        assert.deepEqual(option.isUnique(), unique);
+    });
 });

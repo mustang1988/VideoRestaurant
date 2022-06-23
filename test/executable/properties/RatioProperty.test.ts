@@ -1,11 +1,17 @@
 import { describe, it } from 'mocha';
 import assert from 'assert';
-import { RatioProperty } from '../../../src/executable/properties/RatioProperty';
+import { RatioProperty } from '../../../src/media/properties/RatioProperty';
 import { Ratio } from '../../../src/executable/Ratio';
 
 describe('RatioProperty.ts', () => {
     it('constructor', () => {
         const value = '24/1';
+        const property = new RatioProperty(value);
+        assert.notDeepEqual(property, null);
+    });
+
+    it('constructor: value is null', () => {
+        const value = null;
         const property = new RatioProperty(value);
         assert.notDeepEqual(property, null);
     });

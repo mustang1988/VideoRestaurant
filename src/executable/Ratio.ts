@@ -17,8 +17,8 @@ export class Ratio implements IRatio {
         return parseFloat(num.toFixed(fixed));
     }
 
-    toString(): string {
-        return `${this.#dividend}/${this.#divisor}`;
+    toString(seperator = '/'): string {
+        return `${this.#dividend}${seperator}${this.#divisor}`;
     }
 
     static parseRatio(stringToParse: string, separator = '/'): Ratio | null {
