@@ -12,38 +12,33 @@ import { Media } from '../media/Media';
  */
 export class FFprobe implements IFFprobe {
     #bin: string;
-    #args: IOption<unknown>[];
+    #args: IOption<unknown>[] = [];
 
     constructor(bin?: string, input?: string) {
         this.#bin = _.isNil(bin) ? 'ffprobe' : bin;
         // set "-v 0 -of json=c=1 -show_streams -show_format" by default
-        this.#args = [
-            new StringOption('-v', '0', 0),
-            new StringOption('-of', 'json=c=1', 1),
-            new FlagOption('-show_streams', true, 2),
-            new FlagOption('-show_format', true, 3),
-        ];
-        !_.isNil(input) && this.#args.push(new StringOption('-i', input));
+        this.v('0').of('json=c=1').showStreams(true).showForamt(true);
+        !_.isNil(input) && this.i(input);
     }
 
     v(log_level: string): IFFprobe {
-        return this.#setOption(new StringOption('-v', log_level));
+        return this.#setOption(new StringOption('-v', log_level, 0));
     }
 
     of(format: string): IFFprobe {
-        return this.#setOption(new StringOption('-of', format));
+        return this.#setOption(new StringOption('-of', format, 1));
     }
 
     i(input: string): IFFprobe {
-        return this.#setOption(new StringOption('-i', input));
+        return this.#setOption(new StringOption('-i', input, 10));
     }
 
     showStreams(flag: boolean): IFFprobe {
-        return this.#setOption(new FlagOption('-show_streams', flag));
+        return this.#setOption(new FlagOption('-show_streams', flag, 2));
     }
 
     showForamt(flag: boolean): IFFprobe {
-        return this.#setOption(new FlagOption('-show_format', flag));
+        return this.#setOption(new FlagOption('-show_format', flag, 3));
     }
 
     #setOption(option: IOption<unknown>): IFFprobe {
@@ -75,17 +70,17 @@ export class FFprobe implements IFFprobe {
     }
 
     execute(): Promise<IMedia> {
-        console.log(this.#getCommand().join(' '));
         return new Promise((resolve, reject) => {
             exec(this.#getCommand().join(' '), (error, stdout, stderr) => {
                 if (error) {
-                    reject({ error, stderr });
+                    reject({ error, stderr, stdout });
                 }
                 const metadata = JSON.parse(stdout);
                 resolve(new Media(metadata as never));
             });
         });
     }
+
     executeSync(): IMedia {
         const stdout: Buffer = execSync(this.#getCommand().join(' '));
         const metadata = JSON.parse(stdout.toString('utf8'));

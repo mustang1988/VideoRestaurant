@@ -20,20 +20,16 @@ import { cpus } from 'os';
  */
 export class FFmpeg implements IFFmpeg {
     #bin: string;
-    #args: IOption<unknown>[];
+    #args: IOption<unknown>[] = [];
 
     constructor(bin?: string, input?: string, output?: string) {
         this.#bin = _.isNil(bin) ? 'ffmpeg' : bin;
-        // by default, -v 0 -threads 4 -pix_fmt yuv420p -sn -dn -y
-        this.#args = [
-            new StringOption('-v', '0', 0),
-            // set default threads number half of local CPU's logic core count
-            new StringOption('-threads', `${cpus().length / 2}`, 1),
-            new StringOption('-pix_fmt', 'yuv420p', 2.2),
-            new FlagOption('-sn', true, 4),
-            new FlagOption('-dn', true, 5),
-            new FlagOption('-y', true, 9),
-        ];
+        this.v('0')
+            .threads(cpus().length / 2)
+            .pix_fmt('yuv420p')
+            .sn(true)
+            .dn(true)
+            .y(true);
         !_.isNil(input) && this.i(input);
         !_.isNil(output) && this.output(output);
     }
