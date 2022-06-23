@@ -4,6 +4,7 @@ import { FlagOption } from './options/FlagOption';
 import { RatioOption } from './options/RatioOption';
 import { StringOption } from './options/StringOption';
 import { Ratio } from './Ratio';
+import { cpus } from 'os';
 
 /**
  * ffmpeg
@@ -23,16 +24,18 @@ export class FFmpeg implements IFFmpeg {
 
     constructor(bin?: string, input?: string, output?: string) {
         this.#bin = _.isNil(bin) ? 'ffmpeg' : bin;
-        // by default, -v 0 -threads 4 -sn -dn -y
+        // by default, -v 0 -threads 4 -pix_fmt yuv420p -sn -dn -y
         this.#args = [
             new StringOption('-v', '0', 0),
-            new StringOption('-threads', '4', 1),
-            new FlagOption('-sn', true),
-            new FlagOption('-dn', true),
-            new FlagOption('-y', true),
+            // set default threads number half of local CPU's logic core count
+            new StringOption('-threads', `${cpus().length / 2}`, 1),
+            new StringOption('-pix_fmt', 'yuv420p', 2.2),
+            new FlagOption('-sn', true, 4),
+            new FlagOption('-dn', true, 5),
+            new FlagOption('-y', true, 9),
         ];
-        !_.isNil(input) && this.#args.push(new StringOption('-i', input));
-        !_.isNil(output) && this.#args.push(new StringOption('', output));
+        !_.isNil(input) && this.i(input);
+        !_.isNil(output) && this.output(output);
     }
 
     v(log_level: string): IFFmpeg {
@@ -56,7 +59,7 @@ export class FFmpeg implements IFFmpeg {
     }
 
     y(flag: boolean): IFFmpeg {
-        return this.#setOption(new FlagOption('-y', flag, 0.2));
+        return this.#setOption(new FlagOption('-y', flag, 9));
     }
 
     g(gop: number): IFFmpeg {
@@ -74,7 +77,8 @@ export class FFmpeg implements IFFmpeg {
     }
 
     c_v(codec: string): IFFmpeg {
-        return this.#setOption(new StringOption('-c:v', codec, 2.3));
+        // return this.#setOption(new StringOption('-c:v', codec, 2.3));
+        return this.#setVideoCodecByDefault(codec);
     }
 
     b_v(bit_rate: number): IFFmpeg {
@@ -84,7 +88,14 @@ export class FFmpeg implements IFFmpeg {
     preset(preset: string): IFFmpeg {
         return this.#setOption(
             new StringOption('-preset', preset, 2.5, [
-                /*TODO*/
+                '-speed',
+                '-row-mt',
+                '-frame-parallel',
+                '-tile-columns',
+                '-quality',
+                '-deadline',
+                '-cpu-used',
+                'level',
             ])
         );
     }
@@ -92,7 +103,14 @@ export class FFmpeg implements IFFmpeg {
     v_profile(profile: string): IFFmpeg {
         return this.#setOption(
             new StringOption('-profile:v', profile, 2.6, [
-                /*TODO*/
+                '-speed',
+                '-row-mt',
+                '-frame-parallel',
+                '-tile-columns',
+                '-quality',
+                '-deadline',
+                '-cpu-used',
+                'level',
             ])
         );
     }
@@ -207,11 +225,12 @@ export class FFmpeg implements IFFmpeg {
 
         if (!_.isNil(option_has_been_set)) {
             // remove exists option in arg list
-            this.#args = _.remove(
-                this.#args,
-                (arg) => arg.getName() === option.getName()
-            );
+            _.remove(this.#args, (arg) => arg.getName() === option.getName());
         }
+        // remove conflicts options
+        _.remove(this.#args, (arg) =>
+            option.getConflicts().includes(arg.getName())
+        );
         // set given option into arg list
         this.#args.push(option);
         return this;
@@ -220,14 +239,42 @@ export class FFmpeg implements IFFmpeg {
     #getCommand(): string[] {
         const arr: string[] = [this.#bin];
         // sort args by priority
-        this.#args = _.sortBy(this.#args, [
-            (arg) => {
-                arg.getPriority();
-            },
-        ]);
+        this.#args.sort(
+            (arg1, arg2) => arg1.getPriority() - arg2.getPriority()
+        );
         this.#args.map((arg) => {
             arr.push(...arg.toArray());
         });
         return arr;
+    }
+
+    #setVideoCodecByDefault(codec: string): IFFmpeg {
+        const h26x_codecs = [
+            'libx264', // H.264 CPU codec
+            'h264_amf', // H.264 AMD GPU codec
+            'h264_nvenc', // H.264 nVIDIA GPU codec
+            'libx265', // H.265(HEVC) CPU codec
+            'hevc_amf', // H.265(HEVC) AMD GPU codec
+            'hevc_nvenc', // H.265(HEVC) nVIDIA GPU codec
+        ];
+        const vpx_codecs = [
+            'libvpx', // VP8 codec
+            'libvpx-vp9', // VP9 codec
+        ];
+        this.#setOption(new StringOption('-c:v', codec, 2.3));
+        if (h26x_codecs.includes(codec)) {
+            this.preset('ultrafast').v_profile('high');
+        } else if (vpx_codecs.includes(codec)) {
+            // libvpx/libvpx-vp9
+            this.speed(16)
+                .row_mt(true)
+                .frame_parallel(true)
+                .tile_columns(6)
+                .quality('realtime')
+                .deadline('realtime')
+                .cpu_used(1)
+                .level(6.2);
+        }
+        return this;
     }
 }

@@ -41,7 +41,7 @@ export class FFprobe implements IFFprobe {
     showStreams(flag: boolean): IFFprobe {
         return this.#setOption(new FlagOption('-show_streams', flag));
     }
-    
+
     showForamt(flag: boolean): IFFprobe {
         return this.#setOption(new FlagOption('-show_format', flag));
     }
@@ -55,10 +55,7 @@ export class FFprobe implements IFFprobe {
 
         if (!_.isNil(option_has_been_set)) {
             // remove exists option in arg list
-            this.#args = _.remove(
-                this.#args,
-                (arg) => arg.getName() === option.getName()
-            );
+            _.remove(this.#args, (arg) => arg.getName() === option.getName());
         }
         // set given option into arg list
         this.#args.push(option);
@@ -68,11 +65,9 @@ export class FFprobe implements IFFprobe {
     #getCommand(): string[] {
         const arr: string[] = [this.#bin];
         // sort args by priority
-        this.#args = _.sortBy(this.#args, [
-            (arg) => {
-                arg.getPriority();
-            },
-        ]);
+        this.#args.sort(
+            (arg1, arg2) => arg1.getPriority() - arg2.getPriority()
+        );
         this.#args.map((arg) => {
             arr.push(...arg.toArray());
         });
@@ -80,6 +75,7 @@ export class FFprobe implements IFFprobe {
     }
 
     execute(): Promise<IMedia> {
+        console.log(this.#getCommand().join(' '));
         return new Promise((resolve, reject) => {
             exec(this.#getCommand().join(' '), (error, stdout, stderr) => {
                 if (error) {
