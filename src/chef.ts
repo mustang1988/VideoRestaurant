@@ -1,6 +1,4 @@
-import { LoggerFactory } from './logger/factory/LoggerFactory';
-
-const logger = LoggerFactory.getLogger('chef');
-logger.info('info sample', '');
-logger.debug('debug sample', '');
-logger.error('error sample', '');
+/**
+ * Chef service endpoint script
+ *  starup a Chef service, provide a WebSocket service communicate to Assistant(s)
+ */

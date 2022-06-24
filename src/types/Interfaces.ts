@@ -261,3 +261,35 @@ export interface ICommandOptions {
     toArray(): string[];
     toString(): string;
 }
+
+export interface IWaiterConfig {
+    service: { port: number };
+    queue: { task: IQueueConfig; callback: IQueueConfig };
+    database: IDatabaseCondig;
+}
+
+export interface IChefConfig {
+    service: { port: number };
+    queue: { task: IQueueConfig; callback: IQueueConfig };
+    database: IDatabaseCondig;
+    hw_acc: boolean;
+}
+
+export interface IAssistantConfig {
+    chef: { host: string; port: number };
+    database: IDatabaseCondig;
+    hw_acc: boolean;
+}
+
+export interface IQueueConfig {
+    host: string;
+    port: number;
+    pwd?: string;
+    name: string;
+}
+
+export interface IDatabaseCondig {
+    host: string;
+    port: number;
+    pwd?: string;
+}
