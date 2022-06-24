@@ -1,129 +1,427 @@
 import { describe, it } from 'mocha';
 import assert from 'assert';
 import { FFmpeg } from '../../src/executable/FFmpeg';
+import path from 'path';
+import { existsSync, mkdirSync, readdirSync, rmdirSync, unlinkSync } from 'fs';
+
+const TEMP_DIR = path.join(__dirname, 'test_output');
 
 describe('FFmpeg.ts', () => {
-    it.skip('hide_banner(flag: boolean)', () => {
-        console.error('TODO add test case');
+    before(() => {
+        // Create temp dir for test output, if it's not exist
+        !existsSync(TEMP_DIR) && mkdirSync(TEMP_DIR);
+    });
+    it('constructor', () => {
+        const bin = 'ffmpeg';
+        const input = path.join(__dirname, 'assets', 'test.mp4');
+        const output = path.join(TEMP_DIR, 'output.mp4');
+        const ffmpeg = new FFmpeg(bin, input, output);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-i')?.getValue(), input);
+        assert.equal(ffmpeg.getOptions().get('')?.getValue(), output);
     });
 
-    it.skip('v(log_level: string)', () => {
-        console.error('TODO add test case');
+    it('hide_banner()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = false;
+        ffmpeg.hide_banner(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(
+            ffmpeg.getOptions().get('-hide_banner')?.getValue(),
+            value
+        );
     });
 
-    it.skip('i(input: string)', () => {
-        console.error('TODO add test case');
+    it('v()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = '0';
+        ffmpeg.v(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-v')?.getValue(), value);
     });
 
-    it.skip('threads(threads: number)', () => {
-        console.error('TODO add test case');
+    it('i()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = '0';
+        ffmpeg.i(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-i')?.getValue(), value);
     });
 
-    it.skip('sn(flag: boolean)', () => {
-        console.error('TODO add test case');
+    it('threads()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = 10;
+        ffmpeg.threads(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-threads')?.getValue(), value);
     });
 
-    it.skip('dn(flag: boolean)', () => {
-        console.error('TODO add test case');
+    it('sn()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = false;
+        ffmpeg.sn(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-sn')?.getValue(), value);
     });
 
-    it.skip('y(flag: boolean)', () => {
-        console.error('TODO add test case');
+    it('dn()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = false;
+        ffmpeg.dn(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-dn')?.getValue(), value);
     });
 
-    it.skip('g(gop: number)', () => {
-        console.error('TODO add test case');
+    it('y()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = false;
+        ffmpeg.y(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-y')?.getValue(), value);
     });
 
-    it.skip('r(fps: string)', () => {
-        console.error('TODO add test case');
+    it('g()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = 10;
+        ffmpeg.g(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-g')?.getValue(), value);
     });
 
-    it.skip('pix_fmt(pix_fmt: string)', () => {
-        console.error('TODO add test case');
+    it('r()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = '24/1';
+        ffmpeg.r(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-r')?.getValue(), value);
     });
 
-    it.skip('c_v(codec: string)', () => {
-        console.error('TODO add test case');
+    it('r(): invalid value', () => {
+        const ffmpeg = new FFmpeg();
+        const value = '';
+        ffmpeg.r(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-r')?.getValue(), null);
     });
 
-    it.skip('b_v(bit_rate: number)', () => {
-        console.error('TODO add test case');
+    it('pix_fmt()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = 'yuv420p';
+        ffmpeg.pix_fmt(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-pix_fmt')?.getValue(), value);
     });
 
-    it.skip('preset(preset: string)', () => {
-        console.error('TODO add test case');
+    it('c_v()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = 'libx264';
+        ffmpeg.c_v(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-c:v')?.getValue(), value);
     });
 
-    it.skip('v_profile(profile: string)', () => {
-        console.error('TODO add test case');
+    it('c_v(): auto set option for H.264', () => {
+        const ffmpeg = new FFmpeg();
+        const value = 'libx264';
+        ffmpeg.c_v(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-c:v')?.getValue(), value);
+        assert.equal(
+            ffmpeg.getOptions().get('-preset')?.getValue(),
+            'ultrafast'
+        );
+        assert.equal(ffmpeg.getOptions().get('-profile:v')?.getValue(), 'high');
     });
 
-    it.skip('speed(speed: number)', () => {
-        console.error('TODO add test case');
+    it('c_v(): auto set option for VPx', () => {
+        const ffmpeg = new FFmpeg();
+        const value = 'libvpx-vp9';
+        ffmpeg.c_v(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-c:v')?.getValue(), value);
+        assert.equal(ffmpeg.getOptions().get('-speed')?.getValue(), 16);
+        assert.equal(ffmpeg.getOptions().get('-row-mt')?.getValue(), true);
+        assert.equal(
+            ffmpeg.getOptions().get('-frame-parallel')?.getValue(),
+            true
+        );
+        assert.equal(ffmpeg.getOptions().get('-tile-columns')?.getValue(), 6);
+        assert.equal(
+            ffmpeg.getOptions().get('-quality')?.getValue(),
+            'realtime'
+        );
+        assert.equal(
+            ffmpeg.getOptions().get('-deadline')?.getValue(),
+            'realtime'
+        );
+        assert.equal(ffmpeg.getOptions().get('-cpu-used')?.getValue(), 1);
+        assert.equal(ffmpeg.getOptions().get('-level')?.getValue(), 6.2);
     });
 
-    it.skip('row_mt(flag: boolean)', () => {
-        console.error('TODO add test case');
+    it('b_v()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = 1000;
+        ffmpeg.b_v(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-b:v')?.getValue(), value);
     });
 
-    it.skip('frame_parallel(flag: boolean)', () => {
-        console.error('TODO add test case');
+    it('preset()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = 'faster';
+        ffmpeg.c_v('libx264').preset(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-preset')?.getValue(), value);
     });
 
-    it.skip('tile_columns(tile_columns: number)', () => {
-        console.error('TODO add test case');
+    it('preset(): without codec set as x26x', () => {
+        const ffmpeg = new FFmpeg();
+        const value = 'faster';
+        ffmpeg.preset(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-preset')?.getValue(), undefined);
     });
 
-    it.skip('quality(quality: string)', () => {
-        console.error('TODO add test case');
+    it('v_profile()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = 'high';
+        ffmpeg.c_v('libx264').v_profile(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-profile:v')?.getValue(), value);
     });
 
-    it.skip('deadline(deadline: string)', () => {
-        console.error('TODO add test case');
+    it('v_profile(): without codec set as x26x', () => {
+        const ffmpeg = new FFmpeg();
+        const value = 'high';
+        ffmpeg.v_profile(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(
+            ffmpeg.getOptions().get('-profile:v')?.getValue(),
+            undefined
+        );
     });
 
-    it.skip('cpu_used(cpu_used: number)', () => {
-        console.error('TODO add test case');
+    it('speed()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = 4;
+        ffmpeg.c_v('libvpx-vp9').speed(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-speed')?.getValue(), value);
     });
 
-    it.skip('level(level: number)', () => {
-        console.error('TODO add test case');
+    it('speed(): without codec set as vpx', () => {
+        const ffmpeg = new FFmpeg();
+        const value = 4;
+        ffmpeg.speed(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-speed')?.getValue(), undefined);
     });
 
-    it.skip('c_a(codec: string)', () => {
-        console.error('TODO add test case');
+    it('row_mt()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = false;
+        ffmpeg.c_v('libvpx-vp9').row_mt(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-row-mt')?.getValue(), value);
     });
 
-    it.skip('b_a(bit_rate: number)', () => {
-        console.error('TODO add test case');
+    it('row_mt(): without codec set as vpx', () => {
+        const ffmpeg = new FFmpeg();
+        const value = false;
+        ffmpeg.row_mt(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-row-mt')?.getValue(), undefined);
     });
 
-    it.skip('ar(sample_rate: number)', () => {
-        console.error('TODO add test case');
+    it('frame_parallel()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = false;
+        ffmpeg.c_v('libvpx-vp9').frame_parallel(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(
+            ffmpeg.getOptions().get('-frame-parallel')?.getValue(),
+            value
+        );
     });
 
-    it.skip('safe(flag: boolean)', () => {
-        console.error('TODO add test case');
+    it('frame_parallel(): without codec set as vpx', () => {
+        const ffmpeg = new FFmpeg();
+        const value = false;
+        ffmpeg.frame_parallel(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(
+            ffmpeg.getOptions().get('-frame-parallel')?.getValue(),
+            undefined
+        );
     });
 
-    it.skip('output(output: string)', () => {
-        console.error('TODO add test case');
+    it('tile_columns()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = 1;
+        ffmpeg.c_v('libvpx-vp9').tile_columns(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(
+            ffmpeg.getOptions().get('-tile-columns')?.getValue(),
+            value
+        );
     });
 
-    it.skip('getId()', () => {
-        console.error('TODO add test case');
+    it('tile_columns(): without codec set as vpx', () => {
+        const ffmpeg = new FFmpeg();
+        const value = 1;
+        ffmpeg.tile_columns(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(
+            ffmpeg.getOptions().get('-tile-columns')?.getValue(),
+            undefined
+        );
     });
 
-    it.skip('getBin()', () => {
-        console.error('TODO add test case');
+    it('quality()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = 'best';
+        ffmpeg.c_v('libvpx-vp9').quality(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-quality')?.getValue(), value);
     });
 
-    it.skip('getOptions()', () => {
-        console.error('TODO add test case');
+    it('quality(): without codec set as vpx', () => {
+        const ffmpeg = new FFmpeg();
+        const value = 'best';
+        ffmpeg.quality(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(
+            ffmpeg.getOptions().get('-quality')?.getValue(),
+            undefined
+        );
     });
 
-    it.skip('execute(immediately?: boolean)', () => {
-        console.error('TODO add test case');
+    it.skip('deadline()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = 'best';
+        ffmpeg.c_v('libvpx-vp9').deadline(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-deadline')?.getValue(), value);
+    });
+
+    it('deadline(): without codec set as vpx', () => {
+        const ffmpeg = new FFmpeg();
+        const value = 'best';
+        ffmpeg.deadline(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(
+            ffmpeg.getOptions().get('-deadline')?.getValue(),
+            undefined
+        );
+    });
+
+    it('cpu_used()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = 4;
+        ffmpeg.c_v('libvpx-vp9').cpu_used(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-cpu-used')?.getValue(), value);
+    });
+
+    it('cpu_used(): without codec set as vpx', () => {
+        const ffmpeg = new FFmpeg();
+        const value = 4;
+        ffmpeg.cpu_used(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(
+            ffmpeg.getOptions().get('-cpu-used')?.getValue(),
+            undefined
+        );
+    });
+
+    it('level()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = 4;
+        ffmpeg.c_v('libvpx-vp9').level(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-level')?.getValue(), value);
+    });
+
+    it('level(): without codec set as vpx', () => {
+        const ffmpeg = new FFmpeg();
+        const value = 4;
+        ffmpeg.level(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-level')?.getValue(), undefined);
+    });
+
+    it('c_a()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = 'aac';
+        ffmpeg.c_a(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-c:a')?.getValue(), value);
+    });
+
+    it('b_a()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = 2048;
+        ffmpeg.b_a(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-b:a')?.getValue(), value);
+    });
+
+    it('ar()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = 44100;
+        ffmpeg.ar(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-ar')?.getValue(), value);
+    });
+
+    it('safe()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = false;
+        ffmpeg.safe(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-safe')?.getValue(), value);
+    });
+
+    it('output()', () => {
+        const ffmpeg = new FFmpeg();
+        const value = path.join(TEMP_DIR, 'output.mp4');
+        ffmpeg.output(value);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('')?.getValue(), value);
+    });
+
+    it('getId()', () => {
+        const ffmpeg = new FFmpeg();
+        assert.notDeepEqual(ffmpeg, null);
+        assert.notDeepEqual(ffmpeg.getId(), null);
+    });
+
+    it('getBin()', () => {
+        const ffmpeg = new FFmpeg();
+        assert.notDeepEqual(ffmpeg, null);
+        assert.notDeepEqual(ffmpeg.getBin(), null);
+    });
+
+    it('getOptions()', () => {
+        const ffmpeg = new FFmpeg();
+        assert.notDeepEqual(ffmpeg, null);
+        assert.notDeepEqual(ffmpeg.getOptions(), []);
+    });
+
+    it('execute()', () => {
+        const ffmpeg = new FFmpeg();
+        assert.notDeepEqual(ffmpeg, null);
+        assert.notDeepEqual(ffmpeg.execute(false), []);
+    });
+
+    after(() => {
+        // Remove temp dir with all files in it
+        if (existsSync(TEMP_DIR)) {
+            const files = readdirSync(TEMP_DIR);
+            for (const file of files) {
+                unlinkSync(path.join(TEMP_DIR, file));
+            }
+        }
+        rmdirSync(TEMP_DIR);
     });
 });

@@ -7,6 +7,7 @@ import { Ratio } from './Ratio';
 import { cpus } from 'os';
 import { TranscodeProcess } from './TranscodeProcess';
 import { CommandOptions } from './options/CommandOptions';
+import { nanoid } from 'nanoid';
 
 /**
  * ffmpeg
@@ -25,8 +26,21 @@ export class FFmpeg implements IFFmpeg {
     #bin: string;
     #options: ICommandOptions;
 
-    constructor(id: string, bin?: string, input?: string, output?: string) {
-        this.#id = id;
+    static H26X_CODECS = [
+        'libx264', // H.264 CPU codec
+        'h264_amf', // H.264 AMD GPU codec
+        'h264_nvenc', // H.264 nVIDIA GPU codec
+        'libx265', // H.265(HEVC) CPU codec
+        'hevc_amf', // H.265(HEVC) AMD GPU codec
+        'hevc_nvenc', // H.265(HEVC) nVIDIA GPU codec
+    ];
+    static VPX_CODECS = [
+        'libvpx', // VP8 codec
+        'libvpx-vp9', // VP9 codec
+    ];
+
+    constructor(bin?: string, input?: string, output?: string) {
+        this.#id = nanoid();
         this.#bin = _.isNil(bin) ? 'ffmpeg' : bin;
         this.#options = new CommandOptions();
         this.hide_banner(true)
@@ -59,7 +73,7 @@ export class FFmpeg implements IFFmpeg {
     }
 
     i(input: string): IFFmpeg {
-        this.#options.setOption(new StringOption('-i', input, 1));
+        this.#options.setOption(new StringOption('-i', input, 1, [], false));
         return this;
     }
 
@@ -113,111 +127,144 @@ export class FFmpeg implements IFFmpeg {
     }
 
     preset(preset: string): IFFmpeg {
-        this.#options.setOption(
-            new StringOption('-preset', preset, 2.5, [
-                '-speed',
-                '-row-mt',
-                '-frame-parallel',
-                '-tile-columns',
-                '-quality',
-                '-deadline',
-                '-cpu-used',
-                'level',
-            ])
-        );
+        FFmpeg.H26X_CODECS.includes(
+            this.#options.get('-c:v')?.getValue() as string
+        ) &&
+            this.#options.setOption(
+                new StringOption('-preset', preset, 2.5, [
+                    '-speed',
+                    '-row-mt',
+                    '-frame-parallel',
+                    '-tile-columns',
+                    '-quality',
+                    '-deadline',
+                    '-cpu-used',
+                    'level',
+                ])
+            );
         return this;
     }
 
     v_profile(profile: string): IFFmpeg {
-        this.#options.setOption(
-            new StringOption('-profile:v', profile, 2.6, [
-                '-speed',
-                '-row-mt',
-                '-frame-parallel',
-                '-tile-columns',
-                '-quality',
-                '-deadline',
-                '-cpu-used',
-                'level',
-            ])
-        );
+        FFmpeg.H26X_CODECS.includes(
+            this.#options.get('-c:v')?.getValue() as string
+        ) &&
+            this.#options.setOption(
+                new StringOption('-profile:v', profile, 2.6, [
+                    '-speed',
+                    '-row-mt',
+                    '-frame-parallel',
+                    '-tile-columns',
+                    '-quality',
+                    '-deadline',
+                    '-cpu-used',
+                    'level',
+                ])
+            );
         return this;
     }
 
     speed(speed: number): IFFmpeg {
-        this.#options.setOption(
-            new StringOption('-speed', `${speed}`, 2.5, [
-                '-preset',
-                'profile:v',
-            ])
-        );
+        FFmpeg.VPX_CODECS.includes(
+            this.#options.get('-c:v')?.getValue() as string
+        ) &&
+            this.#options.setOption(
+                new StringOption('-speed', `${speed}`, 2.5, [
+                    '-preset',
+                    'profile:v',
+                ])
+            );
         return this;
     }
 
     row_mt(flag: boolean): IFFmpeg {
-        this.#options.setOption(
-            new StringOption('-row-mt', flag ? '1' : '0', 2.6, [
-                '-preset',
-                'profile:v',
-            ])
-        );
+        FFmpeg.VPX_CODECS.includes(
+            this.#options.get('-c:v')?.getValue() as string
+        ) &&
+            this.#options.setOption(
+                new StringOption('-row-mt', flag ? '1' : '0', 2.6, [
+                    '-preset',
+                    'profile:v',
+                ])
+            );
         return this;
     }
 
     frame_parallel(flag: boolean): IFFmpeg {
-        this.#options.setOption(
-            new StringOption('-frame-parallel', flag ? '1' : '0', 2.7, [
-                '-preset',
-                'profile:v',
-            ])
-        );
+        FFmpeg.VPX_CODECS.includes(
+            this.#options.get('-c:v')?.getValue() as string
+        ) &&
+            this.#options.setOption(
+                new StringOption('-frame-parallel', flag ? '1' : '0', 2.7, [
+                    '-preset',
+                    'profile:v',
+                ])
+            );
         return this;
     }
 
     tile_columns(tile_columns: number): IFFmpeg {
-        this.#options.setOption(
-            new StringOption('-tile-columns', `${tile_columns}`, 2.8, [
-                '-preset',
-                'profile:v',
-            ])
-        );
+        FFmpeg.VPX_CODECS.includes(
+            this.#options.get('-c:v')?.getValue() as string
+        ) &&
+            this.#options.setOption(
+                new StringOption('-tile-columns', `${tile_columns}`, 2.8, [
+                    '-preset',
+                    'profile:v',
+                ])
+            );
         return this;
     }
 
     quality(quality: string): IFFmpeg {
-        this.#options.setOption(
-            new StringOption('-quality', quality, 2.9, ['-preset', 'profile:v'])
-        );
+        FFmpeg.VPX_CODECS.includes(
+            this.#options.get('-c:v')?.getValue() as string
+        ) &&
+            this.#options.setOption(
+                new StringOption('-quality', quality, 2.9, [
+                    '-preset',
+                    'profile:v',
+                ])
+            );
         return this;
     }
 
     deadline(deadline: string): IFFmpeg {
-        this.#options.setOption(
-            new StringOption('-deadline', deadline, 2.9, [
-                '-preset',
-                'profile:v',
-            ])
-        );
+        FFmpeg.VPX_CODECS.includes(
+            this.#options.get('-c:v')?.getValue() as string
+        ) &&
+            this.#options.setOption(
+                new StringOption('-deadline', deadline, 2.9, [
+                    '-preset',
+                    'profile:v',
+                ])
+            );
         return this;
     }
 
     cpu_used(cpu_used: number): IFFmpeg {
-        this.#options.setOption(
-            new StringOption('-cpu-used', `${cpu_used}`, 2.9, [
-                '-preset',
-                'profile:v',
-            ])
-        );
+        FFmpeg.VPX_CODECS.includes(
+            this.#options.get('-c:v')?.getValue() as string
+        ) &&
+            this.#options.setOption(
+                new StringOption('-cpu-used', `${cpu_used}`, 2.9, [
+                    '-preset',
+                    'profile:v',
+                ])
+            );
         return this;
     }
 
     level(level: number): IFFmpeg {
-        this.#options.setOption(
-            new StringOption('-level', `${level}`, 2.9, [
-                '-preset',
-                'profile:v',
-            ])
-        );
+        FFmpeg.VPX_CODECS.includes(
+            this.#options.get('-c:v')?.getValue() as string
+        ) &&
+            this.#options.setOption(
+                new StringOption('-level', `${level}`, 2.9, [
+                    '-preset',
+                    'profile:v',
+                ])
+            );
         return this;
     }
 
@@ -259,22 +306,10 @@ export class FFmpeg implements IFFmpeg {
     }
 
     #setVideoCodecByDefault(codec: string): IFFmpeg {
-        const h26x_codecs = [
-            'libx264', // H.264 CPU codec
-            'h264_amf', // H.264 AMD GPU codec
-            'h264_nvenc', // H.264 nVIDIA GPU codec
-            'libx265', // H.265(HEVC) CPU codec
-            'hevc_amf', // H.265(HEVC) AMD GPU codec
-            'hevc_nvenc', // H.265(HEVC) nVIDIA GPU codec
-        ];
-        const vpx_codecs = [
-            'libvpx', // VP8 codec
-            'libvpx-vp9', // VP9 codec
-        ];
         this.#options.setOption(new StringOption('-c:v', codec, 2.3));
-        if (h26x_codecs.includes(codec)) {
+        if (FFmpeg.H26X_CODECS.includes(codec)) {
             this.preset('ultrafast').v_profile('high');
-        } else if (vpx_codecs.includes(codec)) {
+        } else if (FFmpeg.VPX_CODECS.includes(codec)) {
             // libvpx/libvpx-vp9
             this.speed(16)
                 .row_mt(true)
