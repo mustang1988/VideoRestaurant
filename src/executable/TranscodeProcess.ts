@@ -15,7 +15,7 @@ export class TranscodeProcess implements IProcessable {
 
     constructor(ffmpeg: IFFmpeg) {
         this.#ffmpeg = ffmpeg;
-        this.#logger = LoggerFactory.getLogger('execute');
+        this.#logger = LoggerFactory.getLogger('TranscodeProcess');
     }
 
     run(): Promise<ChildProcess> {
@@ -37,10 +37,10 @@ export class TranscodeProcess implements IProcessable {
                     resolve(ps);
                 }
             );
-            ps.on('error', (error) => {
-                this.#logger.error('spawn on error: ', error);
-                reject(error);
-            });
+            // ps.on('error', (error) => {
+            //     this.#logger.error('spawn on error: ', error);
+            //     reject(error);
+            // });
         });
     }
     // #ffmpeg: IFFmpeg;

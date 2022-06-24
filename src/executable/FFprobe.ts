@@ -5,6 +5,8 @@ import { StringOption } from './options/StringOption';
 import { exec, execSync } from 'child_process';
 import { Media } from '../media/Media';
 import { CommandOptions } from './options/CommandOptions';
+import { Logger } from 'log4js';
+import { LoggerFactory } from '../logger/factory/LoggerFactory';
 
 /**
  * ffprobe
@@ -14,9 +16,11 @@ import { CommandOptions } from './options/CommandOptions';
 export class FFprobe implements IFFprobe {
     #bin: string;
     #options: ICommandOptions;
+    #logger: Logger;
 
     constructor(bin?: string, input?: string) {
         this.#bin = _.isNil(bin) ? 'ffprobe' : bin;
+        this.#logger = LoggerFactory.getLogger('FFprobe');
         this.#options = new CommandOptions();
         // set "-v 0 -of json=c=1 -show_streams -show_format" by default
         this.v('0').of('json=c=1').showStreams(true).showForamt(true);
@@ -60,12 +64,20 @@ export class FFprobe implements IFFprobe {
         const show_streams = this.#options.get('-show_streams')?.getValue();
         const show_format = this.#options.get('-show_format')?.getValue();
         const input = this.#options.get('-i')?.getValue();
-        return !_.isNil(input) && (show_format as boolean || show_streams as boolean);
+        return (
+            !_.isNil(input) &&
+            ((show_format as boolean) || (show_streams as boolean))
+        );
     }
 
     execute(): Promise<IMedia> {
         return new Promise((resolve, reject) => {
-            !this.check() && reject(new Error('Missing required option'));
+            if (!this.check()) {
+                this.#logger.error('Check failed in execute(): ', {
+                    options: this.#options.toArray(),
+                });
+                reject(new Error('Missing required option'));
+            }
             exec(
                 [this.#bin, ...this.#options.toArray()].join(' '),
                 (error, stdout, stderr) => {
@@ -80,6 +92,12 @@ export class FFprobe implements IFFprobe {
     }
 
     executeSync(): IMedia {
+        if (!this.check()) {
+            this.#logger.error('Check failed in executeSync(): ', {
+                options: this.#options.toArray(),
+            });
+            throw new Error('Missing required option');
+        }
         const stdout: Buffer = execSync(
             [this.#bin, ...this.#options.toArray()].join(' ')
         );

@@ -8,6 +8,8 @@ import { cpus } from 'os';
 import { TranscodeProcess } from './TranscodeProcess';
 import { CommandOptions } from './options/CommandOptions';
 import { nanoid } from 'nanoid';
+import { Logger } from 'log4js';
+import { LoggerFactory } from '../logger/factory/LoggerFactory';
 
 /**
  * ffmpeg
@@ -25,6 +27,7 @@ export class FFmpeg implements IFFmpeg {
     #id: string;
     #bin: string;
     #options: ICommandOptions;
+    #logger: Logger;
 
     static H26X_CODECS = [
         'libx264', // H.264 CPU codec
@@ -41,6 +44,7 @@ export class FFmpeg implements IFFmpeg {
 
     constructor(bin?: string, input?: string, output?: string) {
         this.#id = nanoid();
+        this.#logger = LoggerFactory.getLogger('FFmpeg');
         this.#bin = _.isNil(bin) ? 'ffmpeg' : bin;
         this.#options = new CommandOptions();
         this.hide_banner(true)
@@ -308,6 +312,10 @@ export class FFmpeg implements IFFmpeg {
     execute(immediately = true): Promise<IProcessable> {
         return new Promise((resolve, reject) => {
             if (!this.check()) {
+                this.#logger.error('Check failed: ', {
+                    id: this.#id,
+                    options: this.getOptions().toArray(),
+                });
                 reject(new Error('Missing required option'));
             }
             const ps = new TranscodeProcess(this);

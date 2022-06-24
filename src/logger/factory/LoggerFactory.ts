@@ -1,23 +1,31 @@
 import log4js, { Layout, Logger } from 'log4js';
 import dotenv from 'dotenv';
-import path, { dirname, join } from 'path';
+import { dirname, join } from 'path';
+import { existsSync } from 'fs';
 import _ from 'lodash';
 
 export class LoggerFactory {
     static getLogger(module: string): Logger {
-        // load env file
+        // load env file if it is exist
         const env_file = join(process.cwd(), `${module}.env`);
-        dotenv.config({ path: env_file });
+        existsSync(env_file) && dotenv.config({ path: env_file });
 
-        // get log conf from sys env
-        let { LOG_FILE, LOG_LAYOUT, LOG_LEVEL } = process.env;
-
-        // handle default value for undefined value
-        LOG_FILE = !_.isNil(LOG_FILE) ? LOG_FILE : `logs/${module}.log`;
-        LOG_LAYOUT = !_.isNil(LOG_LAYOUT)
-            ? LOG_LAYOUT
-            : '%[[%d{yyyy/MM/dd hh:mm:ss.SSS}][%p][%c][%f{1}:%l,%o] => %m%]';
-        LOG_LEVEL = !_.isNil(LOG_LEVEL) ? LOG_LEVEL : 'DEBUG';
+        // handle default value
+        const LOG_FILE = _.get(
+            process.env,
+            `${module.toUpperCase()}_LOG_FILE`,
+            `logs/${module}.log`
+        );
+        const LOG_LAYOUT = _.get(
+            process.env,
+            `${module.toUpperCase()}_LOG_LAYOUT`,
+            '%[[%d{yyyy/MM/dd hh:mm:ss.SSS}][%p][%c][%f{1}:%l,%o] => %m%]'
+        );
+        const LOG_LEVEL = _.get(
+            process.env,
+            `${module.toUpperCase()}_LOG_LEVEL`,
+            'DEBUG'
+        );
 
         // build config for log4js
         const layout: Layout = {

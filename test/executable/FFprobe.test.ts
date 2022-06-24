@@ -101,4 +101,14 @@ describe('FFprobe.ts', () => {
         const ffprobe = new FFprobe(bin, input);
         assert.notDeepEqual(ffprobe.executeSync(), null);
     });
+
+    it('executeSync(): missing required option', () => {
+        try {
+            const bin = 'ffprobe';
+            const ffprobe = new FFprobe(bin);
+            assert.notDeepEqual(ffprobe.executeSync(), null);
+        } catch (error) {
+            assert.notEqual(error, null);
+        }
+    });
 });
