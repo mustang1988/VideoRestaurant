@@ -20,6 +20,7 @@ describe('TranscodeProcess.ts', () => {
             .r('60/1')
             .preset('placebo')
             .pix_fmt('yuv420p');
+        console.log(ffmpeg.getOptions().toString());
         const process = ffmpeg.execute(false);
         assert.equal(process.run(), undefined);
     });
@@ -58,8 +59,8 @@ describe('TranscodeProcess.ts', () => {
         const output = path.join(TEMP_DIR, 'output.mp4');
         const ffmpeg = new FFmpeg(bin, input, output)
             .c_v('libx264')
-            .r('60/1')
-            .preset('placebo')
+            .r('24/1')
+            .preset('ultrafast')
             .pix_fmt('yuv420p');
         const process = ffmpeg.execute(false);
         assert.deepEqual(process.getStdout(), '');

@@ -56,8 +56,16 @@ export class FFprobe implements IFFprobe {
         return this.#options;
     }
 
+    check(): boolean {
+        const show_streams = this.#options.get('-show_streams')?.getValue();
+        const show_format = this.#options.get('-show_format')?.getValue();
+        const input = this.#options.get('-i')?.getValue();
+        return !_.isNil(input) && (show_format as boolean || show_streams as boolean);
+    }
+
     execute(): Promise<IMedia> {
         return new Promise((resolve, reject) => {
+            !this.check() && reject(new Error('Missing required option'));
             exec(
                 [this.#bin, ...this.#options.toArray()].join(' '),
                 (error, stdout, stderr) => {

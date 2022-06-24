@@ -299,7 +299,16 @@ export class FFmpeg implements IFFmpeg {
         return this.#options;
     }
 
+    check(): boolean {
+        const input = this.#options.get('-i')?.getValue();
+        const output = this.#options.get('')?.getValue();
+        return !_.isNil(input) && !_.isNil(output);
+    }
+
     execute(immediately = true): IProcessable {
+        if(!this.check()){
+            throw new Error('Missing required option');
+        }
         const process = new TranscodeProcess(this);
         immediately && process.run();
         return process;
@@ -309,7 +318,8 @@ export class FFmpeg implements IFFmpeg {
         this.#options.setOption(new StringOption('-c:v', codec, 2.3));
         if (FFmpeg.H26X_CODECS.includes(codec)) {
             this.preset('ultrafast').v_profile('high');
-        } else if (FFmpeg.VPX_CODECS.includes(codec)) {
+        } 
+        if (FFmpeg.VPX_CODECS.includes(codec)) {
             // libvpx/libvpx-vp9
             this.speed(16)
                 .row_mt(true)

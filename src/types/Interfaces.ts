@@ -217,6 +217,7 @@ export interface IFFmpeg {
     getId(): string;
     getBin(): string;
     getOptions(): ICommandOptions;
+    check(): boolean;
     // execute(): Promise<IProcessable>;
     execute(immediately?: boolean): IProcessable;
 }
@@ -229,6 +230,7 @@ export interface IFFprobe {
     showForamt(flag: boolean): IFFprobe;
     getBin(): string;
     getOptions(): ICommandOptions;
+    check(): boolean;
     execute(): Promise<IMedia>;
     executeSync(): IMedia;
 }
