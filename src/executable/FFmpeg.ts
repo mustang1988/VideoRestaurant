@@ -305,20 +305,22 @@ export class FFmpeg implements IFFmpeg {
         return !_.isNil(input) && !_.isNil(output);
     }
 
-    execute(immediately = true): IProcessable {
-        if(!this.check()){
-            throw new Error('Missing required option');
-        }
-        const process = new TranscodeProcess(this);
-        immediately && process.run();
-        return process;
+    execute(immediately = true): Promise<IProcessable> {
+        return new Promise((resolve, reject) => {
+            if (!this.check()) {
+                reject(new Error('Missing required option'));
+            }
+            const ps = new TranscodeProcess(this);
+            immediately && ps.run();
+            resolve(ps);
+        });
     }
 
     #setVideoCodecByDefault(codec: string): IFFmpeg {
         this.#options.setOption(new StringOption('-c:v', codec, 2.3));
         if (FFmpeg.H26X_CODECS.includes(codec)) {
             this.preset('ultrafast').v_profile('high');
-        } 
+        }
         if (FFmpeg.VPX_CODECS.includes(codec)) {
             // libvpx/libvpx-vp9
             this.speed(16)

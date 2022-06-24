@@ -69,21 +69,21 @@ export interface IProcessable {
     /**
      * Execute current job
      */
-    run(): void;
+    run(): Promise<ChildProcess>;
     /**
      * Get current job's progress percent
      */
-    getProgress(): number;
+    // getProgress(): number;
 
     /**
      * Get job process instance
      */
-    getProcess(): ChildProcess | null;
+    // getProcess(): ChildProcess | null;
 
     /**
      * Get job process's stdout string
      */
-    getStdout(): string;
+    // getStdout(): string;
 }
 
 export interface IMedia {
@@ -219,7 +219,7 @@ export interface IFFmpeg {
     getOptions(): ICommandOptions;
     check(): boolean;
     // execute(): Promise<IProcessable>;
-    execute(immediately?: boolean): IProcessable;
+    execute(immediately?: boolean): Promise<IProcessable>;
 }
 
 export interface IFFprobe {

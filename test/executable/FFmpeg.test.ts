@@ -431,43 +431,48 @@ describe('FFmpeg.ts', () => {
         assert.equal(ffmpeg.check(), true);
     });
 
-    it('execute()', () => {
+    it('execute()', (done) => {
         const bin = 'ffmpeg';
         const input = path.join(__dirname, 'assets', 'test.mp4');
         const output = path.join(TEMP_DIR, 'output.mp4');
         const ffmpeg = new FFmpeg(bin, input, output);
         assert.notDeepEqual(ffmpeg, null);
-        assert.notDeepEqual(ffmpeg.execute(false), []);
+        ffmpeg.execute(false).then((ps) => {
+            assert.notDeepEqual(ps, null);
+            done();
+        });
     });
 
-    it('execute(): missing input', () => {
-        try {
-            const output = path.join(TEMP_DIR, 'output.mp4');
-            const ffmpeg = new FFmpeg().output(output);
-            assert.notDeepEqual(ffmpeg, null);
-            ffmpeg.execute();
-        } catch (error) {
+    it('execute(): missing input', (done) => {
+        const output = path.join(TEMP_DIR, 'output.mp4');
+        const ffmpeg = new FFmpeg().output(output);
+        assert.notDeepEqual(ffmpeg, null);
+        ffmpeg.execute().catch((error) => {
             assert.notDeepEqual(error, null);
-        }
+            done();
+        });
     });
 
-    it('execute(): missing output', () => {
-        try {
-            const input = path.join(__dirname, 'assets', 'test.mp4');
-            const ffmpeg = new FFmpeg().i(input);
-            assert.notDeepEqual(ffmpeg, null);
-        } catch (error) {
+    it('execute(): missing output', (done) => {
+        const input = path.join(__dirname, 'assets', 'test.mp4');
+        const ffmpeg = new FFmpeg().i(input);
+        assert.notDeepEqual(ffmpeg, null);
+        ffmpeg.execute().catch((error) => {
             assert.notDeepEqual(error, null);
-        }
+            done();
+        });
     });
 
-    it('execute(): immediately', () => {
+    it('execute(): immediately', (done) => {
         const bin = 'ffmpeg';
         const input = path.join(__dirname, 'assets', 'test.mp4');
         const output = path.join(TEMP_DIR, 'output.mp4');
         const ffmpeg = new FFmpeg(bin, input, output);
         assert.notDeepEqual(ffmpeg, null);
-        assert.notDeepEqual(ffmpeg.execute(), []);
+        ffmpeg.execute().then((ps) => {
+            assert.notDeepEqual(ps, null);
+            done();
+        });
     });
 
     after(() => {
