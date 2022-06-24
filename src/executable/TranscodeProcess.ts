@@ -1,7 +1,8 @@
-import { IFFmpeg, IProcessable } from '../types/Interfaces';
+import { IFFmpeg, IProcessable, IRatio } from '../types/Interfaces';
 import { ChildProcess, spawn } from 'child_process';
 import { writeFileSync } from 'fs';
 import { dirname, join } from 'path';
+import { FFprobe } from './FFprobe';
 import _ from 'lodash';
 
 export class TranscodeProcess implements IProcessable {
@@ -10,6 +11,7 @@ export class TranscodeProcess implements IProcessable {
     #stdstr = '';
     #current = 0;
     #total = 0;
+    #pid = -1;
 
     static PROGRESS_REGEX = new RegExp('^\\s*frame='); // regex for stdout, to get how many frames has been transcoded
 
@@ -20,13 +22,13 @@ export class TranscodeProcess implements IProcessable {
 
     run(): void {
         // Calcute how many frames will tanscode
-        this.#total = this.#totalFrameCalcute();
+        this.#total = this.#totalFrameCalculate();
         // Start transcode proces
-        this.#ps = spawn(
+        const ps = spawn(
             this.#ffmpeg.getBin(),
             this.#ffmpeg.getOptions().toArray()
         );
-        this.#ps.stderr?.on('data', (data: Buffer) => {
+        ps.stderr?.on('data', (data: Buffer) => {
             const str: string = data.toString();
             this.#stdstr += str;
             if (TranscodeProcess.PROGRESS_REGEX.test(str)) {
@@ -43,9 +45,11 @@ export class TranscodeProcess implements IProcessable {
         // this.#ps.on('error', (error) => {
         //     console.error('onError => ', error);
         // });
-        this.#ps.on('close', (code, signal) => {
-            this.#onFinishi(code, signal);
+        ps.on('close', (code, signal) => {
+            this.#onClose(code, signal);
         });
+        this.#pid = ps.pid ? ps.pid : -1;
+        this.#ps = ps;
     }
 
     getProgress(): number {
@@ -60,20 +64,52 @@ export class TranscodeProcess implements IProcessable {
         return this.#stdstr;
     }
 
-    #totalFrameCalcute(): number {
-        // TODO
-        return 0;
+    #totalFrameCalculate(): number {
+        let frame_count = 0;
+        const input = this.#ffmpeg.getOptions().get('-i')?.getValue();
+        const media = new FFprobe().i(input as string).executeSync();
+        const target_frame_rate = this.#ffmpeg
+            .getOptions()
+            .get('-r')
+            ?.getValue();
+        const duration = media
+            .getStreams()
+            ?.getVideoStream()
+            ?.getDuration()
+            .getValue();
+        // transcode with specified fps
+        if (!_.isNil(target_frame_rate) && !_.isNil(duration)) {
+            frame_count = Math.ceil(
+                (target_frame_rate as IRatio).toNumber() * duration
+            );
+        } else {
+            // transcode without specified fps
+            const nb_frames = media
+                .getStreams()
+                ?.getVideoStream()
+                ?.getNbFrames()
+                .getValue();
+            frame_count = _.isNil(nb_frames)
+                ? 0 // unknown frame count
+                : nb_frames; // for transcode with origin fps
+        }
+        console.log(
+            'TranscodeProcess.#totalFrameCalculate() return: ',
+            frame_count
+        );
+        return frame_count;
     }
 
-    #onFinishi(code: number | null, signal: NodeJS.Signals | null): void {
+    #onClose(code: number | null, signal: NodeJS.Signals | null): void {
         // TODO
-        // console.info('onClose => ', {
-        //     id: this.#ffmpeg.getId(),
-        //     code,
-        //     signal,
-        //     stdout: this.#stdstr,
-        // });
+        console.info('onClose => ', {
+            id: this.#ffmpeg.getId(),
+            code,
+            signal,
+            stdout: this.#stdstr,
+        });
         this.#writeLogFile();
+        // Call Chef
     }
 
     #writeLogFile(): void {
