@@ -1,14 +1,42 @@
 import { IFFmpeg, IProcessable, IRatio } from '../types/Interfaces';
 import { ChildProcess, spawn } from 'child_process';
+import log4js, { Logger } from 'log4js';
+import dotenv from 'dotenv';
 import { writeFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { FFprobe } from './FFprobe';
 
+dotenv.config({ path: join(process.cwd(), 'execute.env') });
+
 export class TranscodeProcess implements IProcessable {
     #ffmpeg: IFFmpeg;
+    #logger: Logger;
 
     constructor(ffmpeg: IFFmpeg) {
         this.#ffmpeg = ffmpeg;
+        const { LOG_FILE, LOG_LEVEL, LOG_LAYOUT } = process.env;
+        const log_layout = { type: 'pattern', pattern: LOG_LAYOUT };
+        log4js.configure({
+            appenders: {
+                stdout: { type: 'stdout', layout: log_layout },
+                execute: {
+                    type: 'file',
+                    filename: LOG_FILE,
+                    layout: log_layout,
+                },
+            },
+            categories: {
+                default: {
+                    appenders: ['stdout'],
+                    level: LOG_LEVEL as string,
+                },
+                execute: {
+                    appenders: ['stdout', 'execute'],
+                    level: LOG_LEVEL as string,
+                },
+            },
+        });
+        this.#logger = log4js.getLogger('execute');
     }
 
     run(): Promise<ChildProcess> {
@@ -17,11 +45,22 @@ export class TranscodeProcess implements IProcessable {
                 this.#ffmpeg.getBin(),
                 this.#ffmpeg.getOptions().toArray()
             );
-            ps.on('close', (code: number | undefined) => {
-                if (code !== 0) {
-                    reject(new Error('Exit code is not zero'));
+            ps.on(
+                'close',
+                (
+                    code: number | undefined,
+                    signal: NodeJS.Signals | undefined
+                ) => {
+                    this.#logger.info('spawn on close: ', { code, signal });
+                    if (code !== 0) {
+                        reject(new Error('Exit code is not zero'));
+                    }
+                    resolve(ps);
                 }
-                resolve(ps);
+            );
+            ps.on('error', (error) => {
+                this.#logger.error('spawn on error: ', error);
+                reject(error);
             });
         });
     }
