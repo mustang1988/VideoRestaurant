@@ -38,4 +38,12 @@ export class MediaStreams implements IMediaStreams {
     getAudioStream(): IMediaAudioStream | null {
         return this.#audio_stream;
     }
+
+    hasVideoStream(): boolean {
+        return !_.isNil(this.#video_stream);
+    }
+
+    hasAudioStream(): boolean {
+        return !_.isNil(this.#audio_stream);
+    }
 }

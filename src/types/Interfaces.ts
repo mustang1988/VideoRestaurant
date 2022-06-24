@@ -99,6 +99,8 @@ export interface IMedia {
      * Get media metadata which is given by ffprobe
      */
     getMetadata(): unknown;
+
+    isHDR(): boolean;
 }
 
 export interface IMediaStreams {
@@ -110,6 +112,10 @@ export interface IMediaStreams {
      * Get media audio stream information
      */
     getAudioStream(): IMediaAudioStream | null;
+
+    hasVideoStream(): boolean;
+
+    hasAudioStream(): boolean;
 }
 
 export interface IMediaFormat {

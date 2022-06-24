@@ -25,4 +25,24 @@ describe('MediaStreams.ts', () => {
         const media = new Media(mock_media_with_only_video_streams as unknown);
         assert.equal(media.getStreams()?.getAudioStream(), null);
     });
+
+    it('hasVideoStream()', () => {
+        const media = new Media(mock_media as unknown);
+        assert.deepEqual(media.getStreams()?.hasVideoStream(), true);
+    });
+
+    it('hasVideoStream(): false', () => {
+        const media = new Media(mock_media_with_only_audio_streams as unknown);
+        assert.deepEqual(media.getStreams()?.hasVideoStream(), false);
+    });
+
+    it('hasAudioStream()', () => {
+        const media = new Media(mock_media as unknown);
+        assert.deepEqual(media.getStreams()?.hasAudioStream(), true);
+    });
+
+    it('hasAudioStream()', () => {
+        const media = new Media(mock_media_with_only_video_streams as unknown);
+        assert.deepEqual(media.getStreams()?.hasAudioStream(), false);
+    });
 });
