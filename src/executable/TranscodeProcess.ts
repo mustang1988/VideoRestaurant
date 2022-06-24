@@ -1,10 +1,11 @@
 import { IFFmpeg, IProcessable, IRatio } from '../types/Interfaces';
 import { ChildProcess, spawn } from 'child_process';
-import log4js, { Logger } from 'log4js';
+import { Logger } from 'log4js';
 import dotenv from 'dotenv';
 import { writeFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { FFprobe } from './FFprobe';
+import { LoggerFactory } from '../logger/factory/LoggerFactory';
 
 dotenv.config({ path: join(process.cwd(), 'execute.env') });
 
@@ -14,29 +15,7 @@ export class TranscodeProcess implements IProcessable {
 
     constructor(ffmpeg: IFFmpeg) {
         this.#ffmpeg = ffmpeg;
-        const { LOG_FILE, LOG_LEVEL, LOG_LAYOUT } = process.env;
-        const log_layout = { type: 'pattern', pattern: LOG_LAYOUT };
-        log4js.configure({
-            appenders: {
-                stdout: { type: 'stdout', layout: log_layout },
-                execute: {
-                    type: 'file',
-                    filename: LOG_FILE,
-                    layout: log_layout,
-                },
-            },
-            categories: {
-                default: {
-                    appenders: ['stdout'],
-                    level: LOG_LEVEL as string,
-                },
-                execute: {
-                    appenders: ['stdout', 'execute'],
-                    level: LOG_LEVEL as string,
-                },
-            },
-        });
-        this.#logger = log4js.getLogger('execute');
+        this.#logger = LoggerFactory.getLogger('execute');
     }
 
     run(): Promise<ChildProcess> {
