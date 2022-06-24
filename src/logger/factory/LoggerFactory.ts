@@ -55,7 +55,7 @@ export class LoggerFactory {
             appenders: ['stdout', 'file', 'all'],
             level: LOG_LEVEL as string,
         });
-        log4js.configure({ appenders, categories });
+        log4js.configure({ appenders, categories, pm2: true });
         // get logger instance from log4js
         return log4js.getLogger(module);
     }

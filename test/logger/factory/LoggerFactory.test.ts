@@ -8,5 +8,6 @@ describe('LoggerFactory.ts', () => {
         const module_name = nanoid();
         const logger = LoggerFactory.getLogger(module_name);
         assert.notDeepEqual(logger, null);
+        logger.info('Unit test, LoggerFactory.getLogger: ', module_name);
     });
 });
