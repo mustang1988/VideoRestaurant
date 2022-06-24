@@ -1,10 +1,8 @@
-import { IFFmpeg, IProcessable, IRatio } from '../types/Interfaces';
+import { IFFmpeg, IProcessable } from '../types/Interfaces';
 import { ChildProcess, spawn } from 'child_process';
 import { Logger } from 'log4js';
 import dotenv from 'dotenv';
-import { writeFileSync } from 'fs';
-import { dirname, join } from 'path';
-import { FFprobe } from './FFprobe';
+import { join } from 'path';
 import { LoggerFactory } from '../logger/factory/LoggerFactory';
 
 dotenv.config({ path: join(process.cwd(), 'execute.env') });
@@ -22,8 +20,10 @@ export class TranscodeProcess implements IProcessable {
         return new Promise((resolve, reject) => {
             this.#logger.info(
                 'Command will execute: \n',
-                [this.#ffmpeg.getBin(), ...this.#ffmpeg.getOptions().toArray()]
-                    .join(' \\\n')
+                [
+                    this.#ffmpeg.getBin(),
+                    ...this.#ffmpeg.getOptions().toArray(),
+                ].join(' \\\n')
             );
             const ps = spawn(
                 this.#ffmpeg.getBin(),

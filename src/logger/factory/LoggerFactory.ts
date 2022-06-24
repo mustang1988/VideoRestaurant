@@ -8,7 +8,8 @@ export class LoggerFactory {
     static getLogger(module: string): Logger {
         // load env file if it is exist
         const env_file = join(process.cwd(), `${module}.env`);
-        existsSync(env_file) && dotenv.config({ path: env_file });
+        existsSync(env_file) &&
+            dotenv.config({ path: env_file, override: true });
 
         // handle default value
         const LOG_FILE = _.get(
