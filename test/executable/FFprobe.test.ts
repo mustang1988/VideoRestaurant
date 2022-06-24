@@ -79,7 +79,7 @@ describe('FFprobe.ts', () => {
         assert.notDeepEqual(ffprobe.execute(), null);
     });
 
-    it('execute(): failed', () => {
+    it('execute(): command failed', () => {
         const bin = 'ffprobe';
         const input = 'a.mp4';
         const ffprobe = new FFprobe(bin, input);
@@ -102,6 +102,16 @@ describe('FFprobe.ts', () => {
         assert.notDeepEqual(ffprobe.executeSync(), null);
     });
 
+    it('executeSync(): command failed', () => {
+        try {
+            const bin = 'ffprobe';
+            const ffprobe = new FFprobe(bin, 'a.mp4');
+            assert.notDeepEqual(ffprobe.executeSync(), null);
+        } catch (error) {
+            assert.notEqual(error, null);
+        }
+    });
+
     it('executeSync(): missing required option', () => {
         try {
             const bin = 'ffprobe';
@@ -111,4 +121,5 @@ describe('FFprobe.ts', () => {
             assert.notEqual(error, null);
         }
     });
+
 });

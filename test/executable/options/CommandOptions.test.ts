@@ -56,17 +56,4 @@ describe('CommandOptions.ts', () => {
             `${name_2} ${value_2} ${name_3} ${value_3}`
         );
     });
-
-    it('length()', () => {
-        const options = new CommandOptions();
-        const name_1 = 'name_1';
-        const value_1 = 'value_1';
-        const priority_1 = 1;
-        const name_2 = 'name_2';
-        const value_2 = 'value_2';
-        const priority_2 = 0;
-        options.setOption(new StringOption(name_1, value_1, priority_1));
-        options.setOption(new StringOption(name_2, value_2, priority_2));
-        assert.deepEqual(options.length(), 2);
-    });
 });

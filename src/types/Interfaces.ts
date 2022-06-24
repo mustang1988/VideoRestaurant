@@ -251,7 +251,6 @@ export interface IProperty<T> {
 
 export interface ICommandOptions {
     setOption(option: IOption<unknown>): void;
-    length(): number;
     get(name: string): IOption<unknown> | undefined;
     toArray(): string[];
     toString(): string;

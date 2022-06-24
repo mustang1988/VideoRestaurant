@@ -4,6 +4,7 @@ import _ from 'lodash';
 export class Ratio implements IRatio {
     #dividend: number;
     #divisor: number;
+    
     constructor(dividend: number, divisor: number) {
         this.#dividend = dividend;
         this.#divisor = divisor;

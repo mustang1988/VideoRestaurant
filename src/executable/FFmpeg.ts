@@ -121,7 +121,6 @@ export class FFmpeg implements IFFmpeg {
     }
 
     c_v(codec: string): IFFmpeg {
-        // this.#options.setOption(new StringOption('-c:v', codec, 2.3));
         return this.#setVideoCodecByDefault(codec);
     }
 

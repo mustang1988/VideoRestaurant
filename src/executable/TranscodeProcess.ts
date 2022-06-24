@@ -20,6 +20,11 @@ export class TranscodeProcess implements IProcessable {
 
     run(): Promise<ChildProcess> {
         return new Promise((resolve, reject) => {
+            this.#logger.info(
+                'Command will execute: \n',
+                [this.#ffmpeg.getBin(), ...this.#ffmpeg.getOptions().toArray()]
+                    .join(' \\\n')
+            );
             const ps = spawn(
                 this.#ffmpeg.getBin(),
                 this.#ffmpeg.getOptions().toArray()

@@ -82,6 +82,13 @@ export class FFprobe implements IFFprobe {
                 [this.#bin, ...this.#options.toArray()].join(' '),
                 (error, stdout, stderr) => {
                     if (error) {
+                        this.#logger.error('Error in execute(): ', {
+                            bin: this.#bin,
+                            options: this.#options.toArray(),
+                            error,
+                            stderr,
+                            stdout,
+                        });
                         reject({ error, stderr, stdout });
                     }
                     const metadata = JSON.parse(stdout);
@@ -98,10 +105,19 @@ export class FFprobe implements IFFprobe {
             });
             throw new Error('Missing required option');
         }
-        const stdout: Buffer = execSync(
-            [this.#bin, ...this.#options.toArray()].join(' ')
-        );
-        const metadata = JSON.parse(stdout.toString('utf8'));
-        return new Media(metadata as never);
+        try {
+            const stdout: Buffer = execSync(
+                [this.#bin, ...this.#options.toArray()].join(' ')
+            );
+            const metadata = JSON.parse(stdout.toString('utf8'));
+            return new Media(metadata as never);
+        } catch (error) {
+            this.#logger.error('Error in executeSync(): ', {
+                bin: this.#bin,
+                options: this.#options.toArray(),
+                error,
+            });
+            throw error;
+        }
     }
 }
