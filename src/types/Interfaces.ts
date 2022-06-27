@@ -4,8 +4,9 @@ import {
     EJobResult,
     EMessageType,
     ENodeStatus,
-    ETaskResult,
-    ETaskStatus,
+    // EQueueMessageType,
+    // ETaskResult,
+    // ETaskStatus,
 } from './Enums';
 
 // super interface of WebSocket message between Chef and Assistant
@@ -309,39 +310,4 @@ export interface IDatabaseCondig {
     host: string;
     port: number;
     pwd?: string;
-}
-
-export interface ITaskQueueMessage {
-    task: ITask;
-}
-
-export interface ICallbackQueueMessage {
-    id: string; // task id
-    result: ETaskResult;
-    error?: string;
-}
-
-export interface ITask {
-    // id: string; // task id
-    // input: string; // task input file
-    // metadata: string; // task input metadata
-    // status: ETaskStatus;
-
-    getId(): string;
-    getInput(): string;
-    getMetadata(): string;
-    getStatus(): ETaskStatus;
-    getJobs(): IJob[];
-
-    setInput(input: string): void;
-    setMetadata(metadata: string): void;
-    setStatus(status?: ETaskStatus): void;
-    setJobs(jobs: IJob[]): void;
-}
-
-export interface IJob {
-    id: string; // job id
-    input: string; // job input file
-    output: string; // job output file
-    options: string[]; // job execute options
 }

@@ -35,7 +35,10 @@ export enum ETaskStatus {
     ANALYZING = 'analyzing', // task has been pop from task queue by Chef, input file's metadata reading
     PREPARING = 'preparing', // task input file metadata has been analyzed by Chef, jobs are creating and distribiting to Assistant
     RUNNING = 'running', // task has been distribute to Assistant by Chef, and no result has been send to Chef
-    COMPOSITING = 'compositing' // all job has been finished, Chef is going to concat output segments, and archive useless output files
-    
+    COMPOSITING = 'compositing', // all job has been finished, Chef is going to concat output segments, and archive useless output files
+}
 
+export enum EQueueMessageType {
+    TASK = 'task',
+    CALLBACK = 'callback',
 }
