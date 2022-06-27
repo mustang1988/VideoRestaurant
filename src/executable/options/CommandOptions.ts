@@ -45,7 +45,11 @@ export class CommandOptions implements ICommandOptions {
                 this.#options,
                 (opt) =>
                     opt.getName() === option.getName() &&
-                    option.constructor.name === opt.constructor.name
+                    opt.constructor.name === option.constructor.name &&
+                    // for -f option
+                    // when -f means output format, it's unique
+                    // but for input foramt, it's allowed multiple
+                    opt.isUnique() === option.isUnique() 
             );
         return this;
     }
