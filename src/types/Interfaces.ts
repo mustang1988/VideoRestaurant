@@ -273,6 +273,10 @@ export interface ICommandOptions {
     toArray(): string[];
     toString(): string;
     getInputs(): IInput[];
+    // getVideoOptions(): IOption<unknown>[];
+    // getAudioOptions(): IOption<unknown>[];
+    getOutputFormat(): IOption<string>;
+    getOutput(): IOption<string>;
 }
 
 export interface IWaiterConfig {

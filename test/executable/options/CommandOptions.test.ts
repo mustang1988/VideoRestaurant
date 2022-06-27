@@ -3,6 +3,7 @@ import assert from 'assert';
 import { CommandOptions } from '../../../src/executable/options/CommandOptions';
 import { StringOption } from '../../../src/executable/options/StringOption';
 import { InputOption } from '../../../src/executable/options/InputOption';
+import { nanoid } from 'nanoid';
 
 describe('CommandOptions.ts', () => {
     it('setOption()', () => {
@@ -68,5 +69,29 @@ describe('CommandOptions.ts', () => {
             )
         );
         assert.equal(options.getInputs().length, 2);
+    });
+
+    it('getOutput()', () => {
+        const options = new CommandOptions();
+        const output = 'a.mp4';
+        options.setOption(new StringOption('', output));
+        options.setOption(
+            new InputOption(
+                false,
+                'anullsrc=channel_layout=stereo:sample_rate=44100'
+            )
+        );
+        assert.equal(options.getOutput().getValue(), output);
+    });
+
+    it('getOutputFormat()', () => {
+        const options = new CommandOptions();
+        const input_format = 'mp4';
+        const output = 'a.mp4';
+        const output_format = nanoid();
+        options.setOption(new StringOption('', output));
+        options.setOption(new StringOption('-f', input_format, 10, [], false));
+        options.setOption(new StringOption('-f', output_format, 10, [], true));
+        assert.equal(options.getOutputFormat().getValue(), output_format);
     });
 });

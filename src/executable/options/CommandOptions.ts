@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { ICommandOptions, IInput, IOption } from '../../types/Interfaces';
 import { InputOption } from './InputOption';
+import { StringOption } from './StringOption';
 
 export class CommandOptions implements ICommandOptions {
     #options: IOption<unknown>[] = [];
@@ -22,6 +23,22 @@ export class CommandOptions implements ICommandOptions {
 
     get(name: string): IOption<unknown> | undefined {
         return _.find(this.#options, (opt) => opt.getName() === name);
+    }
+
+    getOutput(): IOption<string> {
+        const output_option = _.find(
+            this.#options,
+            (opt) => opt.getName() === ''
+        );
+        return output_option as StringOption;
+    }
+
+    getOutputFormat(): IOption<string> {
+        const output_option = _.find(
+            this.#options,
+            (opt) => opt.getName() === '-f' && opt.isUnique()
+        );
+        return output_option as StringOption;
     }
 
     toArray(): string[] {
@@ -49,7 +66,7 @@ export class CommandOptions implements ICommandOptions {
                     // for -f option
                     // when -f means output format, it's unique
                     // but for input foramt, it's allowed multiple
-                    opt.isUnique() === option.isUnique() 
+                    opt.isUnique() === option.isUnique()
             );
         return this;
     }

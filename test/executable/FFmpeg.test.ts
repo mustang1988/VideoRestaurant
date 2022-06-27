@@ -445,10 +445,23 @@ describe('FFmpeg.ts', () => {
         const bin = 'ffmpeg';
         const input = path.join(__dirname, 'assets', 'test.mp4');
         const output = path.join(TEMP_DIR, 'output.mp4');
-        const output_format = 'lavfi';
-        const ffmpeg = new FFmpeg(bin, input, output).f(output_format, false);
+        const input_format = 'lavfi';
+        const ffmpeg = new FFmpeg(bin, input, output).f(input_format, false);
         assert.notDeepEqual(ffmpeg, null);
-        assert.equal(ffmpeg.getOptions().get('-f')?.getValue(), output_format);
+        assert.equal(ffmpeg.getOptions().get('-f')?.getValue(), input_format);
+    });
+
+    it('f(): input format and output format', () => {
+        const bin = 'ffmpeg';
+        const input = path.join(__dirname, 'assets', 'test.mp4');
+        const output = path.join(TEMP_DIR, 'output.mp4');
+        const input_format = 'lavfi';
+        const output_format = 'mp4'
+        const ffmpeg = new FFmpeg(bin, input, output)
+            .f(input_format, false)
+            .f(output_format);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().getOutputFormat().getValue(), output_format);
     });
 
     it('getInputs()', () => {
