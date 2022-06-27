@@ -2,6 +2,7 @@ import { describe, it } from 'mocha';
 import assert from 'assert';
 import { CommandOptions } from '../../../src/executable/options/CommandOptions';
 import { StringOption } from '../../../src/executable/options/StringOption';
+import { InputOption } from '../../../src/executable/options/InputOption';
 
 describe('CommandOptions.ts', () => {
     it('setOption()', () => {
@@ -55,5 +56,17 @@ describe('CommandOptions.ts', () => {
             options.toString(),
             `${name_2} ${value_2} ${name_3} ${value_3}`
         );
+    });
+
+    it('getInputs()', () => {
+        const options = new CommandOptions();
+        options.setOption(new InputOption(true, 'a.mp4'));
+        options.setOption(
+            new InputOption(
+                false,
+                'anullsrc=channel_layout=stereo:sample_rate=44100'
+            )
+        );
+        assert.equal(options.getInputs().length, 2);
     });
 });

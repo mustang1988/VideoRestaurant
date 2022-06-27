@@ -9,7 +9,7 @@ export class InputOption extends StringOption implements IInput {
         value: string,
         priority = 0,
         conflicts: string[] = [],
-        unique = true
+        unique = false
     ) {
         super('-i', value, priority, conflicts, unique);
         this.#is_file = is_file;

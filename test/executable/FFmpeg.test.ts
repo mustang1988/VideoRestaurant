@@ -431,6 +431,36 @@ describe('FFmpeg.ts', () => {
         assert.equal(ffmpeg.check(), true);
     });
 
+    it('f()', () => {
+        const bin = 'ffmpeg';
+        const input = path.join(__dirname, 'assets', 'test.mp4');
+        const output = path.join(TEMP_DIR, 'output.mp4');
+        const output_format = 'mp4';
+        const ffmpeg = new FFmpeg(bin, input, output).f(output_format, true);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-f')?.getValue(), output_format);
+    });
+
+    it('f(): input format', () => {
+        const bin = 'ffmpeg';
+        const input = path.join(__dirname, 'assets', 'test.mp4');
+        const output = path.join(TEMP_DIR, 'output.mp4');
+        const output_format = 'lavfi';
+        const ffmpeg = new FFmpeg(bin, input, output).f(output_format, false);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getOptions().get('-f')?.getValue(), output_format);
+    });
+
+    it('getInputs()', () => {
+        const bin = 'ffmpeg';
+        const input = path.join(__dirname, 'assets', 'test.mp4');
+        const output = path.join(TEMP_DIR, 'output.mp4');
+        const input_source = '';
+        const ffmpeg = new FFmpeg(bin, input, output).i(input_source, false);
+        assert.notDeepEqual(ffmpeg, null);
+        assert.equal(ffmpeg.getInputs().length, 2);
+    });
+
     it('execute()', (done) => {
         const bin = 'ffmpeg';
         const input = path.join(__dirname, 'assets', 'test.mp4');
