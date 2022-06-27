@@ -1,5 +1,10 @@
 import _ from 'lodash';
-import { ICommandOptions, IFFmpeg, IProcessable } from '../types/Interfaces';
+import {
+    ICommandOptions,
+    IFFmpeg,
+    IInput,
+    IProcessable,
+} from '../types/Interfaces';
 import { FlagOption } from './options/FlagOption';
 import { RatioOption } from './options/RatioOption';
 import { StringOption } from './options/StringOption';
@@ -10,6 +15,7 @@ import { CommandOptions } from './options/CommandOptions';
 import { nanoid } from 'nanoid';
 import { Logger } from 'log4js';
 import { LoggerFactory } from '../logger/factory/LoggerFactory';
+import { InputOption } from './options/InputOption';
 
 /**
  * ffmpeg
@@ -42,7 +48,7 @@ export class FFmpeg implements IFFmpeg {
         'libvpx-vp9', // VP9 codec
     ];
 
-    constructor(bin?: string, input?: string, output?: string) {
+    constructor(bin?: string, input_file?: string, output?: string) {
         this.#id = nanoid();
         this.#logger = LoggerFactory.getLogger('FFmpeg');
         this.#bin = _.isNil(bin) ? 'ffmpeg' : bin;
@@ -54,7 +60,8 @@ export class FFmpeg implements IFFmpeg {
             .sn(true)
             .dn(true)
             .y(true);
-        !_.isNil(input) && this.i(input);
+        !_.isNil(input_file) &&
+            this.#options.setOption(new InputOption(true, input_file));
         !_.isNil(output) && this.output(output);
     }
 
@@ -76,8 +83,8 @@ export class FFmpeg implements IFFmpeg {
         return this;
     }
 
-    i(input: string): IFFmpeg {
-        this.#options.setOption(new StringOption('-i', input, 1, [], false));
+    i(input: string, file = true): IFFmpeg {
+        this.#options.setOption(new InputOption(file, input));
         return this;
     }
 
@@ -293,6 +300,15 @@ export class FFmpeg implements IFFmpeg {
         return this;
     }
 
+    f(format: string, output?: boolean): IFFmpeg {
+        this.#options.setOption(
+            // for input format unique will be allowed, the priority will just lower than input option
+            // for output format unique will not be allower, prioroty will just lower than output option
+            new StringOption('-f', format, output ? 10 : 1.1, [], output)
+        );
+        return this;
+    }
+
     output(output: string): IFFmpeg {
         this.#options.setOption(new StringOption('', output, 10));
         return this;
@@ -300,6 +316,10 @@ export class FFmpeg implements IFFmpeg {
 
     getOptions(): ICommandOptions {
         return this.#options;
+    }
+
+    getInputs(): IInput[] {
+        return this.#options.getInputs();
     }
 
     check(): boolean {

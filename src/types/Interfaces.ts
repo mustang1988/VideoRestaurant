@@ -1,6 +1,12 @@
 // interface defines
 import { ChildProcess } from 'child_process';
-import { EJobResult, EMessageType, ENodeStatus } from './Enums';
+import {
+    EJobResult,
+    EMessageType,
+    ENodeStatus,
+    ETaskResult,
+    ETaskStatus,
+} from './Enums';
 
 // super interface of WebSocket message between Chef and Assistant
 export interface IWebSocketMessage {
@@ -195,7 +201,7 @@ export interface IRatio {
 export interface IFFmpeg {
     hide_banner(flag: boolean): IFFmpeg;
     v(log_level: string): IFFmpeg;
-    i(input: string): IFFmpeg;
+    i(input: string, file?: boolean): IFFmpeg;
     threads(threads: number): IFFmpeg;
     sn(flag: boolean): IFFmpeg;
     dn(flag: boolean): IFFmpeg;
@@ -219,13 +225,19 @@ export interface IFFmpeg {
     b_a(bit_rate: number): IFFmpeg;
     ar(sample_rate: number): IFFmpeg;
     safe(flag: boolean): IFFmpeg;
+    f(format: string, output?: boolean): IFFmpeg;
     output(output: string): IFFmpeg;
     getId(): string;
     getBin(): string;
     getOptions(): ICommandOptions;
+    getInputs(): IInput[];
     check(): boolean;
     // execute(): Promise<IProcessable>;
     execute(immediately?: boolean): Promise<IProcessable>;
+}
+
+export interface IInput extends IOption<string> {
+    isFile(): boolean;
 }
 
 export interface IFFprobe {
@@ -260,6 +272,7 @@ export interface ICommandOptions {
     get(name: string): IOption<unknown> | undefined;
     toArray(): string[];
     toString(): string;
+    getInputs(): IInput[];
 }
 
 export interface IWaiterConfig {
@@ -292,4 +305,39 @@ export interface IDatabaseCondig {
     host: string;
     port: number;
     pwd?: string;
+}
+
+export interface ITaskQueueMessage {
+    task: ITask;
+}
+
+export interface ICallbackQueueMessage {
+    id: string; // task id
+    result: ETaskResult;
+    error?: string;
+}
+
+export interface ITask {
+    // id: string; // task id
+    // input: string; // task input file
+    // metadata: string; // task input metadata
+    // status: ETaskStatus;
+
+    getId(): string;
+    getInput(): string;
+    getMetadata(): string;
+    getStatus(): ETaskStatus;
+    getJobs(): IJob[];
+
+    setInput(input: string): void;
+    setMetadata(metadata: string): void;
+    setStatus(status?: ETaskStatus): void;
+    setJobs(jobs: IJob[]): void;
+}
+
+export interface IJob {
+    id: string; // job id
+    input: string; // job input file
+    output: string; // job output file
+    options: string[]; // job execute options
 }

@@ -1,8 +1,17 @@
 import _ from 'lodash';
-import { ICommandOptions, IOption } from '../../types/Interfaces';
+import { ICommandOptions, IInput, IOption } from '../../types/Interfaces';
+import { InputOption } from './InputOption';
 
 export class CommandOptions implements ICommandOptions {
     #options: IOption<unknown>[] = [];
+
+    getInputs(): IInput[] {
+        const inputs: IInput[] = [];
+        for (const opt of this.#options) {
+            opt instanceof InputOption && inputs.push(opt);
+        }
+        return inputs;
+    }
 
     setOption(option: IOption<unknown>): void {
         this.#removeExistOptions(option)
@@ -34,7 +43,9 @@ export class CommandOptions implements ICommandOptions {
         option.isUnique() &&
             _.remove(
                 this.#options,
-                (opt) => opt.getName() === option.getName()
+                (opt) =>
+                    opt.getName() === option.getName() &&
+                    option.constructor.name === opt.constructor.name
             );
         return this;
     }
