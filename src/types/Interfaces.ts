@@ -1,5 +1,6 @@
 // interface defines
 import { ChildProcess } from 'child_process';
+import Redis from 'ioredis';
 import {
     EJobResult,
     EMessageType,
@@ -310,4 +311,11 @@ export interface IDatabaseCondig {
     host: string;
     port: number;
     pwd?: string;
+}
+
+export interface IWaiter {
+    getTaskQueue(): Redis;
+    getCallbackQueue(): Redis;
+    getDatabase(): Redis;
+    start(): Promise<void>;
 }
