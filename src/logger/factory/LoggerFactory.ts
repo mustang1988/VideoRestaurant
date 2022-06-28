@@ -12,18 +12,18 @@ export class LoggerFactory {
             dotenv.config({ path: env_file, override: true });
 
         // handle default value
-        const LOG_FILE: string = _.get(
+        const log_file: string = _.get(
             process.env,
             `${module.toUpperCase()}_LOG_FILE`,
             `logs/${module}.log`
         );
-        const LOG_LAYOUT: string = _.get(
+        const log_layout: string = _.get(
             process.env,
             `${module.toUpperCase()}_LOG_LAYOUT`,
             // [yyyy/MM/dd hh:mm:ss.SSS][LEVLE][CATEGORY][FILE:LINE:COLUMN] => MESSAGE
             '%[[%d{yyyy/MM/dd hh:mm:ss.SSS}][%p][%c][%f:%l,%o] => %m%]'
         );
-        const LOG_LEVEL: string = _.get(
+        const log_level: string = _.get(
             process.env,
             `${module.toUpperCase()}_LOG_LEVEL`,
             'DEBUG'
@@ -32,25 +32,28 @@ export class LoggerFactory {
         // build config for log4js
         const layout: Layout = {
             type: 'pattern',
-            pattern: LOG_LAYOUT,
+            pattern: log_layout,
         };
         const appenders = {
+            // log to console
             stdout: { type: 'stdout', layout: layout },
+            // log to a specified file
             file: {
                 type: 'file',
-                filename: LOG_FILE,
+                filename: log_file,
                 layout: layout,
             },
+            // log all into one file
             all: {
                 type: 'file',
-                filename: join(dirname(LOG_FILE), 'all.log'),
+                filename: join(dirname(log_file), 'all.log'),
                 layout: layout,
             },
         };
         const categories = {
             default: {
                 appenders: ['stdout'],
-                level: LOG_LEVEL,
+                level: log_level,
                 enableCallStack: true,
             },
         };
@@ -58,7 +61,7 @@ export class LoggerFactory {
         module !== 'default' &&
             _.set(categories, module, {
                 appenders: ['stdout', 'file', 'all'],
-                level: LOG_LEVEL,
+                level: log_level,
                 enableCallStack: true,
             });
         log4js.configure({ appenders, categories, pm2: true });

@@ -28,10 +28,7 @@ export class Ratio implements IRatio {
             return null;
         }
         const [dividend, divisor] = _.map(values, (value) => parseInt(value));
-        if (_.isNaN(dividend)) {
-            return null;
-        }
-        if (_.isNaN(divisor)) {
+        if (_.isNaN(dividend) || _.isNaN(divisor)) {
             return null;
         }
         return new Ratio(dividend, divisor);

@@ -3,6 +3,9 @@ import { ICommandOptions, IInput, IOption } from '../../types/Interfaces';
 import { InputOption } from './InputOption';
 import { StringOption } from './StringOption';
 
+/**
+ * Command line options list for ffmpeg and ffprobe
+ */
 export class CommandOptions implements ICommandOptions {
     #options: IOption<unknown>[] = [];
 
@@ -72,7 +75,7 @@ export class CommandOptions implements ICommandOptions {
     }
 
     /**
-     * Remove all options which name is in given option's conflict
+     * Remove all options which name is in the given option's conflict
      * @param option
      */
     #removeConflictOptions(option: IOption<unknown>): CommandOptions {
