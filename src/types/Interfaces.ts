@@ -1,11 +1,9 @@
 // interface defines
 import { ChildProcess } from 'child_process';
-import Redis from 'ioredis';
 import {
-    EJobResult,
+    EResult,
     EMessageType,
     ENodeStatus,
-    EQueueMessageType,
     // EQueueMessageType,
     // ETaskResult,
     // ETaskStatus,
@@ -59,7 +57,7 @@ export interface IJobResolveMessage extends IWebSocketMessage {
     id: string;
     output: string;
     log: string;
-    result: EJobResult;
+    result: EResult;
 }
 
 // message interface for Chef to get job process
@@ -315,39 +313,4 @@ export interface IRedisConfig {
 
 export interface IQueueConfig extends IRedisConfig {
     name: string;
-}
-
-export interface IWaiter {
-    getTaskQueue(): unknown;
-    getCallbackQueue(): unknown;
-    getDatabase(): unknown;
-    start(): Promise<void>;
-}
-
-export interface IQueueProducter<T> {
-    getQueue(): Redis;
-    getName(): string;
-    push(message: IQueueMessage<T>): Promise<boolean>;
-}
-
-export interface IQueueConsumer<T> {
-    getQueue(): Redis;
-    getName(): string;
-    pop(): Promise<IQueueMessage<T> | null>;
-}
-
-export interface IQueueMessage<T> {
-    getType(): EQueueMessageType;
-    getBody(): T;
-    toString(): string;
-}
-
-export interface ITask {
-    getId(): string;
-    getCallbackUrl(): string;
-}
-
-export interface IJob {
-    getId(): string;
-    getTaskId(): string;
 }

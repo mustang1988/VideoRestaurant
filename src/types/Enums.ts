@@ -20,12 +20,7 @@ export enum EMessageType {
     A_JOB_PROCESS_RESPONSE = 'job_process_response',
 }
 
-export enum EJobResult {
-    SUCCESS = 'success',
-    FAILED = 'failed',
-}
-
-export enum ETaskResult {
+export enum EResult {
     SUCCESS = 'success',
     FAILED = 'failed',
 }
