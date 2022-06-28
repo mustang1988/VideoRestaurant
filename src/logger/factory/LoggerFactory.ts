@@ -20,7 +20,8 @@ export class LoggerFactory {
         const LOG_LAYOUT = _.get(
             process.env,
             `${module.toUpperCase()}_LOG_LAYOUT`,
-            '%[[%d{yyyy/MM/dd hh:mm:ss.SSS}][%p][%c][%f{1}:%l,%o] => %m%]'
+            // [yyyy/MM/dd hh:mm:ss.SSS][LEVLE][CATEGORY][FILE:LINE:COLUMN] => MESSAGE
+            '%[[%d{yyyy/MM/dd hh:mm:ss.SSS}][%p][%c][%f:%l,%o] => %m%]'
         );
         const LOG_LEVEL = _.get(
             process.env,
@@ -55,6 +56,7 @@ export class LoggerFactory {
         _.set(categories, module, {
             appenders: ['stdout', 'file', 'all'],
             level: LOG_LEVEL as string,
+            enableCallStack: true,
         });
         log4js.configure({ appenders, categories, pm2: true });
         // get logger instance from log4js
