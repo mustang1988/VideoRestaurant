@@ -2,36 +2,46 @@ import { existsSync } from 'fs';
 import { join } from 'path';
 import dotenv from 'dotenv';
 import { IWaiter, IWaiterConfig } from '../types/Interfaces';
-import Redis from 'ioredis';
 import { Logger } from 'log4js';
 import { LoggerFactory } from '../logger/factory/LoggerFactory';
+import {
+    RedisClientFactory,
+    RedisClientType,
+} from '../redis/factory/RedisClientFactory';
 export class Waiter implements IWaiter {
     #config: IWaiterConfig;
-    #task_queue: Redis | null;
-    #callback_queue: Redis | null;
-    #database: Redis | null;
     #logger: Logger;
+    #task_queue: RedisClientType;
+    #callback_queue: RedisClientType;
+    #database: RedisClientType;
     // #server:
 
     constructor() {
-        this.#logger = LoggerFactory.getLogger('waiter');
+        this.#logger = LoggerFactory.GetLogger('waiter');
         this.#loadEnv();
     }
 
-    getTaskQueue(): Redis | null {
+    getTaskQueue(): RedisClientType {
         return this.#task_queue;
     }
 
-    getCallbackQueue(): Redis | null {
+    getCallbackQueue(): RedisClientType {
         return this.#callback_queue;
     }
 
-    getDatabase(): Redis | null {
+    getDatabase(): RedisClientType {
         return this.#database;
     }
 
     async start(): Promise<void> {
         this.#logger.info('[start()] Waiter initialize');
+        this.#init()
+            .then(() => {
+                this.#logger.info('init success');
+            })
+            .catch((e) => {
+                this.#logger.error(e);
+            });
 
         // .then(() => {
         //     this.#logger.info('[start()] Waiter has been initialized');
@@ -50,11 +60,8 @@ export class Waiter implements IWaiter {
     }
 
     #loadEnv() {
-        // const waiter_env = join(process.cwd(), 'waiter.env');
-        // const is_env_exist = existsSync(waiter_env);
-        // if (is_env_exist) {
-        //     dotenv.config({ path: waiter_env, override: true });
-        // }
+        const env_path = join(__dirname, '..', '..', 'waiter.env');
+        existsSync(env_path) && dotenv.config({ path: env_path });
         const waiter_config: IWaiterConfig = {
             service: { port: parseInt(process.env.WAITER_PORT || '9000') },
             queue: {
@@ -63,22 +70,38 @@ export class Waiter implements IWaiter {
                     port: parseInt(process.env.TASK_QUEUE_PORT || '6379'),
                     name: process.env.TASK_QUEUE_NAME || 'queue:task',
                     pwd: process.env.TASK_QUEUE_PWD,
+                    username: process.env.TASK_QUEUE_USERNAME,
                 },
                 callback: {
                     host: process.env.CALLBACK_QUEUE_HOST || 'localhost',
                     port: parseInt(process.env.CALLBACK_QUEUE_PORT || '6379'),
                     name: process.env.CALLBACK_QUEUE_NAME || 'queue:callback',
                     pwd: process.env.CALLBACK_QUEUE_PWD,
+                    username: process.env.CALLBACK_QUEUE_USERNAME,
                 },
             },
             database: {
                 host: process.env.DB_HOST || 'localhost',
                 port: parseInt(process.env.DB_PORT || '6379'),
                 pwd: process.env.DB_PWD,
+                username: process.env.DB_USERNAME,
             },
         };
         this.#logger.info('Waiter config: ', waiter_config);
         this.#config = waiter_config;
+    }
+
+    async #init(): Promise<void> {
+        this.#task_queue = await RedisClientFactory.CreateClient(
+            this.#config.queue.task
+        );
+        this.#callback_queue = await RedisClientFactory.CreateClient(
+            this.#config.queue.callback
+        );
+        this.#database = await RedisClientFactory.CreateClient(
+            this.#config.database
+        );
+        return;
     }
 
     // #init(): Promise<unknown> {

@@ -5,7 +5,7 @@ import { existsSync } from 'fs';
 import _ from 'lodash';
 
 export class LoggerFactory {
-    static getLogger(module: string): Logger {
+    static GetLogger(module: string): Logger {
         // load env file if it is exist
         const env_file = join(process.cwd(), `${module}.env`);
         existsSync(env_file) &&

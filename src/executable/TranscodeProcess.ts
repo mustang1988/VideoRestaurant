@@ -13,7 +13,7 @@ export class TranscodeProcess implements IProcessable {
 
     constructor(ffmpeg: IFFmpeg) {
         this.#ffmpeg = ffmpeg;
-        this.#logger = LoggerFactory.getLogger('TranscodeProcess');
+        this.#logger = LoggerFactory.GetLogger('TranscodeProcess');
     }
 
     run(): Promise<ChildProcess> {

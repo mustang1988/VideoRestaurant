@@ -31,7 +31,7 @@ export class FFprobe implements IFFprobe {
 
     constructor(bin?: string, input?: string) {
         this.#bin = _.isNil(bin) ? FFprobe.DEFAULT_BIN : bin;
-        this.#logger = LoggerFactory.getLogger('FFprobe');
+        this.#logger = LoggerFactory.GetLogger('FFprobe');
         this.#options = new CommandOptions();
         // set "-v 0 -of json=c=1 -show_streams -show_format" by default
         this.v('0').of('json=c=1').showStreams(true).showForamt(true);

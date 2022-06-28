@@ -5,6 +5,7 @@ import {
     EJobResult,
     EMessageType,
     ENodeStatus,
+    EQueueMessageType,
     // EQueueMessageType,
     // ETaskResult,
     // ETaskStatus,
@@ -289,38 +290,64 @@ export interface ICommandOptions {
 export interface IWaiterConfig {
     service: { port: number };
     queue: { task: IQueueConfig; callback: IQueueConfig };
-    database: IDatabaseCondig;
+    database: IRedisConfig;
 }
 
 export interface IChefConfig {
     service: { port: number };
     queue: { task: IQueueConfig; callback: IQueueConfig };
-    database: IDatabaseCondig;
+    database: IRedisConfig;
     hw_acc: boolean;
 }
 
 export interface IAssistantConfig {
     chef: { host: string; port: number };
-    database: IDatabaseCondig;
+    database: IRedisConfig;
     hw_acc: boolean;
 }
 
-export interface IQueueConfig {
+export interface IRedisConfig {
     host: string;
     port: number;
     pwd?: string;
+    username?: string;
+}
+
+export interface IQueueConfig extends IRedisConfig {
     name: string;
 }
 
-export interface IDatabaseCondig {
-    host: string;
-    port: number;
-    pwd?: string;
+export interface IWaiter {
+    getTaskQueue(): unknown;
+    getCallbackQueue(): unknown;
+    getDatabase(): unknown;
+    start(): Promise<void>;
 }
 
-export interface IWaiter {
-    getTaskQueue(): Redis | null;
-    getCallbackQueue(): Redis | null;
-    getDatabase(): Redis | null;
-    start(): Promise<void>;
+export interface IQueueProducter<T> {
+    getQueue(): Redis;
+    getName(): string;
+    push(message: IQueueMessage<T>): Promise<boolean>;
+}
+
+export interface IQueueConsumer<T> {
+    getQueue(): Redis;
+    getName(): string;
+    pop(): Promise<IQueueMessage<T> | null>;
+}
+
+export interface IQueueMessage<T> {
+    getType(): EQueueMessageType;
+    getBody(): T;
+    toString(): string;
+}
+
+export interface ITask {
+    getId(): string;
+    getCallbackUrl(): string;
+}
+
+export interface IJob {
+    getId(): string;
+    getTaskId(): string;
 }

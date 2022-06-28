@@ -50,7 +50,7 @@ export class FFmpeg implements IFFmpeg {
 
     constructor(bin?: string, input_file?: string, output?: string) {
         this.#id = nanoid();
-        this.#logger = LoggerFactory.getLogger('FFmpeg');
+        this.#logger = LoggerFactory.GetLogger('FFmpeg');
         this.#bin = _.isNil(bin) ? 'ffmpeg' : bin;
         this.#options = new CommandOptions();
         this.hide_banner(true)
