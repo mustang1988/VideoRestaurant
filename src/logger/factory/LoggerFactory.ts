@@ -12,18 +12,18 @@ export class LoggerFactory {
             dotenv.config({ path: env_file, override: true });
 
         // handle default value
-        const LOG_FILE = _.get(
+        const LOG_FILE: string = _.get(
             process.env,
             `${module.toUpperCase()}_LOG_FILE`,
             `logs/${module}.log`
         );
-        const LOG_LAYOUT = _.get(
+        const LOG_LAYOUT: string = _.get(
             process.env,
             `${module.toUpperCase()}_LOG_LAYOUT`,
             // [yyyy/MM/dd hh:mm:ss.SSS][LEVLE][CATEGORY][FILE:LINE:COLUMN] => MESSAGE
             '%[[%d{yyyy/MM/dd hh:mm:ss.SSS}][%p][%c][%f:%l,%o] => %m%]'
         );
-        const LOG_LEVEL = _.get(
+        const LOG_LEVEL: string = _.get(
             process.env,
             `${module.toUpperCase()}_LOG_LEVEL`,
             'DEBUG'
@@ -50,14 +50,17 @@ export class LoggerFactory {
         const categories = {
             default: {
                 appenders: ['stdout'],
-                level: LOG_LEVEL as string,
+                level: LOG_LEVEL,
+                enableCallStack: true,
             },
         };
-        _.set(categories, module, {
-            appenders: ['stdout', 'file', 'all'],
-            level: LOG_LEVEL as string,
-            enableCallStack: true,
-        });
+        // default category log will only has std output
+        module !== 'default' &&
+            _.set(categories, module, {
+                appenders: ['stdout', 'file', 'all'],
+                level: LOG_LEVEL,
+                enableCallStack: true,
+            });
         log4js.configure({ appenders, categories, pm2: true });
         // get logger instance from log4js
         return log4js.getLogger(module);

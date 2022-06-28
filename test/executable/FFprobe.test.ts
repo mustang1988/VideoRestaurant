@@ -102,7 +102,6 @@ describe('FFprobe.ts', () => {
         const input = path.join(__dirname, 'assets', 'test.mp4');
         const ffprobe = new FFprobe(bin).i(input);
         const res = ffprobe.check();
-        console.log(res);
         assert.equal(res.result, false);
         assert.notEqual(res.errors, undefined);
         assert.notEqual(
@@ -115,7 +114,6 @@ describe('FFprobe.ts', () => {
         const input = path.join(__dirname, 'assets', 'a.mp4');
         const ffprobe = new FFprobe().i(input);
         const res = ffprobe.check();
-        console.log(res);
         assert.equal(res.result, false);
         assert.notEqual(res.errors, undefined);
         assert.notEqual(
@@ -136,7 +134,6 @@ describe('FFprobe.ts', () => {
         const input = path.join(__dirname, 'assets', 'test.mp4');
         const ffprobe = new FFprobe(bin, input);
         const res = ffprobe.check();
-        console.log(res);
         assert.equal(res.result, true);
         assert.deepEqual(res.errors, []);
     });
