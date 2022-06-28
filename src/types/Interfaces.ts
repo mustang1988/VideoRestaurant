@@ -250,9 +250,14 @@ export interface IFFprobe {
     showForamt(flag: boolean): IFFprobe;
     getBin(): string;
     getOptions(): ICommandOptions;
-    check(): boolean;
+    check(): CheckResult;
     execute(): Promise<IMedia>;
     executeSync(): IMedia;
+}
+
+export interface CheckResult {
+    result: boolean;
+    errors?: Error[];
 }
 
 export interface IOption<T> {
@@ -314,8 +319,8 @@ export interface IDatabaseCondig {
 }
 
 export interface IWaiter {
-    getTaskQueue(): Redis;
-    getCallbackQueue(): Redis;
-    getDatabase(): Redis;
+    getTaskQueue(): Redis | null;
+    getCallbackQueue(): Redis | null;
+    getDatabase(): Redis | null;
     start(): Promise<void>;
 }

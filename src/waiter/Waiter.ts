@@ -5,12 +5,11 @@ import { IWaiter, IWaiterConfig } from '../types/Interfaces';
 import Redis from 'ioredis';
 import { Logger } from 'log4js';
 import { LoggerFactory } from '../logger/factory/LoggerFactory';
-
 export class Waiter implements IWaiter {
     #config: IWaiterConfig;
-    #task_queue: Redis;
-    #callback_queue: Redis;
-    #database: Redis;
+    #task_queue: Redis | null;
+    #callback_queue: Redis | null;
+    #database: Redis | null;
     #logger: Logger;
     // #server:
 
@@ -19,27 +18,27 @@ export class Waiter implements IWaiter {
         this.#loadEnv();
     }
 
-    getTaskQueue(): Redis {
+    getTaskQueue(): Redis | null {
         return this.#task_queue;
     }
 
-    getCallbackQueue(): Redis {
+    getCallbackQueue(): Redis | null {
         return this.#callback_queue;
     }
 
-    getDatabase(): Redis {
+    getDatabase(): Redis | null {
         return this.#database;
     }
 
     async start(): Promise<void> {
         this.#logger.info('[start()] Waiter initialize');
-        this.#init()
-            .then(() => {
-                this.#logger.info('[start()] Waiter has been initialized');
-            })
-            .catch((error) => {
-                this.#logger.error('[start()] Waiter init with error: ', error);
-            });
+
+        // .then(() => {
+        //     this.#logger.info('[start()] Waiter has been initialized');
+        // })
+        // .catch((error) => {
+        //     this.#logger.error('[start()] Waiter init with error: ', error);
+        // });
         // .then(() => {
         //     // TODO
         //     // start GRPC service listening
@@ -82,59 +81,83 @@ export class Waiter implements IWaiter {
         this.#config = waiter_config;
     }
 
-    #init(): Promise<void> {
-        return new Promise((resolve, reject) => {
-            this.#task_queue = new Redis(
-                this.#config.queue.task.port,
-                this.#config.queue.task.host,
-                { lazyConnect: true }
-            );
-            this.#callback_queue = new Redis(
-                this.#config.queue.callback.port,
-                this.#config.queue.callback.host,
-                { lazyConnect: true }
-            );
-            this.#database = new Redis(
-                this.#config.database.port,
-                this.#config.database.host,
-                { lazyConnect: true }
-            );
-            this.#task_queue.connect((error, result) => {
-                if (error && !result) {
-                    this.#logger.error(
-                        '[init()] Task queue connection init with error: ',
-                        error
-                    );
-                    this.#task_queue.disconnect();
-                    reject(error);
-                }
-            });
-            this.#callback_queue.connect((error, result) => {
-                if (error && !result) {
-                    this.#logger.error(
-                        '[init()] Callback queue connection init with error: ',
-                        error
-                    );
-                    this.#callback_queue.disconnect();
-                    reject(error);
-                }
-            });
-            this.#database.connect((error, result) => {
-                if (error && !result) {
-                    this.#logger.error(
-                        '[init()] Database connection init with error: ',
-                        error
-                    );
-                    this.#database.disconnect();
-                    reject(error);
-                }
-            });
-            resolve();
-        });
-    }
+    // #init(): Promise<unknown> {
+    //     // this.#task_queue = new Redis(
+    //     //     this.#config.queue.task.port,
+    //     //     this.#config.queue.task.host,
+    //     //     { lazyConnect: true }
+    //     // );
+    //     // this.#task_queue.connect().catch((e) => {
+    //     //     console.error('task_queue: ', e);
+    //     //     this.#task_queue?.disconnect(false);
+    //     // });
+    //     // this.#callback_queue = new Redis(
+    //     //     this.#config.queue.callback.port,
+    //     //     this.#config.queue.callback.host,
+    //     //     { lazyConnect: true }
+    //     // );
+    //     // this.#callback_queue.connect().catch((e) => {
+    //     //     console.error('callback_queue: ', e);
+    //     //     this.#callback_queue?.disconnect(false);
+    //     // });
+    //     // this.#database = new Redis(
+    //     //     this.#config.database.port,
+    //     //     this.#config.database.host,
+    //     //     { lazyConnect: true }
+    //     // );
+    //     // this.#database.connect().catch((e) => {
+    //     //     console.error('database: ', e);
+    //     //     this.#database?.disconnect(false);
+    //     // });
+    //     // return new Promise((resolve, reject) => {
+    //     //     resolve('1');
+    //     // });
 
-    async #loadProto(): Promise<void> {
-        //TODO
-        this.#logger.info('[loadProto()] Waiter load proto');
-    }
+    //     // return Promise.all([
+    //     //     this.#task_queue.connect(),
+    //     //     this.#callback_queue.connect(),
+    //     //     this.#database.connect(),
+    //     // ]);
+
+    //     // return new Promise((resolve, reject) => {
+    //     //     const errors: Error[] = [];
+
+    //     //     this.#task_queue.connect().catch((error) => {
+    //     //         this.#task_queue?.disconnect(false);
+    //     //         errors.push(error);
+    //     //     });
+    //     //     // this.#task_queue.on('error', (error) => {
+    //     //     //     this.#task_queue?.disconnect(false);
+    //     //     //     // this.#logger.error('task_queue error: ', error instanceof Error);
+    //     //     //     errors.push(error);
+    //     //     // });
+    //     //     // this.#callback_queue = new Redis(
+    //     //     //     this.#config.queue.callback.port,
+    //     //     //     this.#config.queue.callback.host
+    //     //     // );
+    //     //     // this.#callback_queue.on('error', (error) => {
+    //     //     //     this.#callback_queue?.disconnect(false);
+    //     //     //     // this.#logger.error('callback_queue error: ', error);
+    //     //     //     errors.push(error);
+    //     //     // });
+    //     //     // this.#database = new Redis(
+    //     //     //     this.#config.database.port,
+    //     //     //     this.#config.database.host
+    //     //     // );
+    //     //     // this.#database.on('error', (error) => {
+    //     //     //     this.#database?.disconnect(false);
+    //     //     //     // this.#logger.error('database error: ', error);
+    //     //     //     errors.push(error);
+    //     //     // });
+    //     //     if (_.isEmpty()) {
+    //     //         resolve();
+    //     //     }
+    //     //     reject(errors);
+    //     // });
+    // }
+
+    // async #loadProto(): Promise<void> {
+    //     //TODO
+    //     this.#logger.info('[loadProto()] Waiter load proto');
+    // }
 }

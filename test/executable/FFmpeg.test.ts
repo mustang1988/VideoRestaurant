@@ -3,8 +3,10 @@ import assert from 'assert';
 import { FFmpeg } from '../../src/executable/FFmpeg';
 import path from 'path';
 import { existsSync, mkdirSync, readdirSync, rmdirSync, unlinkSync } from 'fs';
+import { platform } from 'os';
 
 const TEMP_DIR = path.join(__dirname, 'test_output');
+const runtime_platform = platform() === 'win32' ? 'windows' : platform();
 
 describe('FFmpeg.ts', () => {
     before(() => {
@@ -12,7 +14,14 @@ describe('FFmpeg.ts', () => {
         !existsSync(TEMP_DIR) && mkdirSync(TEMP_DIR);
     });
     it('constructor', () => {
-        const bin = 'ffmpeg';
+        const bin = path.join(
+            __dirname,
+            '..',
+            '..',
+            'bin',
+            runtime_platform,
+            'ffmpeg.exe'
+        );
         const input = path.join(__dirname, 'assets', 'test.mp4');
         const output = path.join(TEMP_DIR, 'output.mp4');
         const ffmpeg = new FFmpeg(bin, input, output);
@@ -423,7 +432,14 @@ describe('FFmpeg.ts', () => {
     });
 
     it('check(): true', () => {
-        const bin = 'ffmpeg';
+        const bin = path.join(
+            __dirname,
+            '..',
+            '..',
+            'bin',
+            runtime_platform,
+            'ffmpeg.exe'
+        );
         const input = path.join(__dirname, 'assets', 'test.mp4');
         const output = path.join(TEMP_DIR, 'output.mp4');
         const ffmpeg = new FFmpeg(bin, input, output);
@@ -432,7 +448,14 @@ describe('FFmpeg.ts', () => {
     });
 
     it('f()', () => {
-        const bin = 'ffmpeg';
+        const bin = path.join(
+            __dirname,
+            '..',
+            '..',
+            'bin',
+            runtime_platform,
+            'ffmpeg.exe'
+        );
         const input = path.join(__dirname, 'assets', 'test.mp4');
         const output = path.join(TEMP_DIR, 'output.mp4');
         const output_format = 'mp4';
@@ -442,7 +465,14 @@ describe('FFmpeg.ts', () => {
     });
 
     it('f(): input format', () => {
-        const bin = 'ffmpeg';
+        const bin = path.join(
+            __dirname,
+            '..',
+            '..',
+            'bin',
+            runtime_platform,
+            'ffmpeg.exe'
+        );
         const input = path.join(__dirname, 'assets', 'test.mp4');
         const output = path.join(TEMP_DIR, 'output.mp4');
         const input_format = 'lavfi';
@@ -452,20 +482,37 @@ describe('FFmpeg.ts', () => {
     });
 
     it('f(): input format and output format', () => {
-        const bin = 'ffmpeg';
+        const bin = path.join(
+            __dirname,
+            '..',
+            '..',
+            'bin',
+            runtime_platform,
+            'ffmpeg.exe'
+        );
         const input = path.join(__dirname, 'assets', 'test.mp4');
         const output = path.join(TEMP_DIR, 'output.mp4');
         const input_format = 'lavfi';
-        const output_format = 'mp4'
+        const output_format = 'mp4';
         const ffmpeg = new FFmpeg(bin, input, output)
             .f(input_format, false)
             .f(output_format);
         assert.notDeepEqual(ffmpeg, null);
-        assert.equal(ffmpeg.getOptions().getOutputFormat().getValue(), output_format);
+        assert.equal(
+            ffmpeg.getOptions().getOutputFormat().getValue(),
+            output_format
+        );
     });
 
     it('getInputs()', () => {
-        const bin = 'ffmpeg';
+        const bin = path.join(
+            __dirname,
+            '..',
+            '..',
+            'bin',
+            runtime_platform,
+            'ffmpeg.exe'
+        );
         const input = path.join(__dirname, 'assets', 'test.mp4');
         const output = path.join(TEMP_DIR, 'output.mp4');
         const input_source = '';
@@ -475,7 +522,14 @@ describe('FFmpeg.ts', () => {
     });
 
     it('execute()', (done) => {
-        const bin = 'ffmpeg';
+        const bin = path.join(
+            __dirname,
+            '..',
+            '..',
+            'bin',
+            runtime_platform,
+            'ffmpeg.exe'
+        );
         const input = path.join(__dirname, 'assets', 'test.mp4');
         const output = path.join(TEMP_DIR, 'output.mp4');
         const ffmpeg = new FFmpeg(bin, input, output);
@@ -487,8 +541,16 @@ describe('FFmpeg.ts', () => {
     });
 
     it('execute(): missing input', (done) => {
+        const bin = path.join(
+            __dirname,
+            '..',
+            '..',
+            'bin',
+            runtime_platform,
+            'ffmpeg.exe'
+        );
         const output = path.join(TEMP_DIR, 'output.mp4');
-        const ffmpeg = new FFmpeg().output(output);
+        const ffmpeg = new FFmpeg(bin).output(output);
         assert.notDeepEqual(ffmpeg, null);
         ffmpeg.execute().catch((error) => {
             assert.notDeepEqual(error, null);
@@ -497,8 +559,16 @@ describe('FFmpeg.ts', () => {
     });
 
     it('execute(): missing output', (done) => {
+        const bin = path.join(
+            __dirname,
+            '..',
+            '..',
+            'bin',
+            runtime_platform,
+            'ffmpeg.exe'
+        );
         const input = path.join(__dirname, 'assets', 'test.mp4');
-        const ffmpeg = new FFmpeg().i(input);
+        const ffmpeg = new FFmpeg(bin).i(input);
         assert.notDeepEqual(ffmpeg, null);
         ffmpeg.execute().catch((error) => {
             assert.notDeepEqual(error, null);
@@ -507,7 +577,14 @@ describe('FFmpeg.ts', () => {
     });
 
     it('execute(): immediately', (done) => {
-        const bin = 'ffmpeg';
+        const bin = path.join(
+            __dirname,
+            '..',
+            '..',
+            'bin',
+            runtime_platform,
+            'ffmpeg.exe'
+        );
         const input = path.join(__dirname, 'assets', 'test.mp4');
         const output = path.join(TEMP_DIR, 'output.mp4');
         const ffmpeg = new FFmpeg(bin, input, output);

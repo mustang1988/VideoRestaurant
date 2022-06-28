@@ -2,10 +2,23 @@ import { describe, it } from 'mocha';
 import assert from 'assert';
 import { FFprobe } from '../../src/executable/FFprobe';
 import path from 'path';
+import _ from 'lodash';
+import { MissingRequiredOptionError } from '../../src/errors/MissingRequiredOptionError';
+import { FileNotFoundError } from '../../src/errors/FileNotFoundError';
+import { platform } from 'os';
+
+const runtime_platform = platform() === 'win32' ? 'windows' : platform();
 
 describe('FFprobe.ts', () => {
     it('constructor', () => {
-        const bin = 'ffprobe';
+        const bin = path.join(
+            __dirname,
+            '..',
+            '..',
+            'bin',
+            runtime_platform,
+            'ffprobe.exe'
+        );
         const input = path.join(__dirname, 'assets', 'test.mp4');
         const ffprobe = new FFprobe(bin, input);
         assert.deepEqual(ffprobe.getBin(), bin);
@@ -52,42 +65,119 @@ describe('FFprobe.ts', () => {
     });
 
     it('check(): failed without show anything', () => {
-        const bin = 'ffprobe';
+        const bin = path.join(
+            __dirname,
+            '..',
+            '..',
+            'bin',
+            runtime_platform,
+            'ffprobe.exe'
+        );
         const input = path.join(__dirname, 'assets', 'test.mp4');
         const ffprobe = new FFprobe(bin, input)
             .showForamt(false)
             .showStreams(false);
-        assert.equal(ffprobe.check(), false);
+        const res = ffprobe.check();
+        assert.equal(res.result, false);
+        assert.notEqual(res.errors, undefined);
+        assert.notEqual(
+            _.find(res.errors, (e) => e instanceof MissingRequiredOptionError),
+            undefined
+        );
     });
 
     it('check(): failed without input', () => {
         const ffprobe = new FFprobe();
-        assert.equal(ffprobe.check(), false);
+        const res = ffprobe.check();
+        assert.equal(res.result, false);
+        assert.notEqual(res.errors, undefined);
+        assert.notEqual(
+            _.find(res.errors, (e) => e instanceof MissingRequiredOptionError),
+            undefined
+        );
+    });
+
+    it('check(): failed with bin not exist', () => {
+        const bin = 'c:\\ffprobe';
+        const input = path.join(__dirname, 'assets', 'test.mp4');
+        const ffprobe = new FFprobe(bin).i(input);
+        const res = ffprobe.check();
+        console.log(res);
+        assert.equal(res.result, false);
+        assert.notEqual(res.errors, undefined);
+        assert.notEqual(
+            _.find(res.errors, (e) => e instanceof FileNotFoundError),
+            undefined
+        );
+    });
+
+    it('check(): failed with input not exist', () => {
+        const input = path.join(__dirname, 'assets', 'a.mp4');
+        const ffprobe = new FFprobe().i(input);
+        const res = ffprobe.check();
+        console.log(res);
+        assert.equal(res.result, false);
+        assert.notEqual(res.errors, undefined);
+        assert.notEqual(
+            _.find(res.errors, (e) => e instanceof FileNotFoundError),
+            undefined
+        );
     });
 
     it('check(): true', () => {
-        const bin = 'ffprobe';
+        const bin = path.join(
+            __dirname,
+            '..',
+            '..',
+            'bin',
+            runtime_platform,
+            'ffprobe.exe'
+        );
         const input = path.join(__dirname, 'assets', 'test.mp4');
         const ffprobe = new FFprobe(bin, input);
-        assert.equal(ffprobe.check(), true);
+        const res = ffprobe.check();
+        console.log(res);
+        assert.equal(res.result, true);
+        assert.deepEqual(res.errors, []);
     });
 
     it('execute()', () => {
-        const bin = 'ffprobe';
+        const bin = path.join(
+            __dirname,
+            '..',
+            '..',
+            'bin',
+            runtime_platform,
+            'ffprobe.exe'
+        );
         const input = path.join(__dirname, 'assets', 'test.mp4');
         const ffprobe = new FFprobe(bin, input);
         assert.notDeepEqual(ffprobe.execute(), null);
     });
 
     it('execute(): command failed', () => {
-        const bin = 'ffprobe';
+        const bin = path.join(
+            __dirname,
+            '..',
+            '..',
+            'bin',
+            runtime_platform,
+            'ffprobe.exe'
+        );
         const input = 'a.mp4';
         const ffprobe = new FFprobe(bin, input);
         assert.notDeepEqual(ffprobe.execute(), null);
     });
 
     it('execute(): missing required option', (done) => {
-        const bin = 'ffprobe';
+        const bin = path.join(
+            __dirname,
+            '..',
+            '..',
+            'bin',
+            runtime_platform,
+            'ffprobe.exe'
+        );
         const ffprobe = new FFprobe(bin);
         ffprobe.execute().catch((error) => {
             assert.notDeepEqual(error, null);
@@ -96,7 +186,14 @@ describe('FFprobe.ts', () => {
     });
 
     it('executeSync()', () => {
-        const bin = 'ffprobe';
+        const bin = path.join(
+            __dirname,
+            '..',
+            '..',
+            'bin',
+            runtime_platform,
+            'ffprobe.exe'
+        );
         const input = path.join(__dirname, 'assets', 'test.mp4');
         const ffprobe = new FFprobe(bin, input);
         assert.notDeepEqual(ffprobe.executeSync(), null);
@@ -105,7 +202,8 @@ describe('FFprobe.ts', () => {
     it('executeSync(): command failed', () => {
         try {
             const bin = 'ffprobe';
-            const ffprobe = new FFprobe(bin, 'a.mp4');
+            const input = path.join(__dirname, 'assets', 'test.mp4');
+            const ffprobe = new FFprobe(bin, input);
             assert.notDeepEqual(ffprobe.executeSync(), null);
         } catch (error) {
             assert.notEqual(error, null);
@@ -114,12 +212,18 @@ describe('FFprobe.ts', () => {
 
     it('executeSync(): missing required option', () => {
         try {
-            const bin = 'ffprobe';
+            const bin = path.join(
+                __dirname,
+                '..',
+                '..',
+                'bin',
+                runtime_platform,
+                'ffprobe.exe'
+            );
             const ffprobe = new FFprobe(bin);
             assert.notDeepEqual(ffprobe.executeSync(), null);
         } catch (error) {
             assert.notEqual(error, null);
         }
     });
-
 });

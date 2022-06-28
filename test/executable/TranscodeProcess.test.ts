@@ -12,7 +12,7 @@ describe('TranscodeProcess.ts', () => {
     });
 
     it('run()', (done) => {
-        const bin = 'ffmpeg';
+        const bin = path.join(__dirname, '..', '..', 'bin', 'windows','ffmpeg.exe');
         const input = path.join(__dirname, 'assets', 'test.mp4');
         const output = path.join(TEMP_DIR, 'output.mp4');
         const ffmpeg = new FFmpeg(bin, input, output)
@@ -29,7 +29,7 @@ describe('TranscodeProcess.ts', () => {
     });
 
     // it('getProgress()', () => {
-    //     const bin = 'ffmpeg';
+    //     const bin = path.join(__dirname, '..', '..', 'bin', 'windows','ffmpeg.exe');
     //     const input = path.join(__dirname, 'assets', 'test.mp4');
     //     const output = path.join(TEMP_DIR, 'output.mp4');
     //     const ffmpeg = new FFmpeg(bin, input, output)
@@ -42,7 +42,7 @@ describe('TranscodeProcess.ts', () => {
     // });
 
     // it('getProcess()', () => {
-    //     const bin = 'ffmpeg';
+    //     const bin = path.join(__dirname, '..', '..', 'bin', 'windows','ffmpeg.exe');
     //     const input = path.join(__dirname, 'assets', 'test.mp4');
     //     const output = path.join(TEMP_DIR, 'output.mp4');
     //     const ffmpeg = new FFmpeg(bin, input, output)
@@ -57,7 +57,7 @@ describe('TranscodeProcess.ts', () => {
     // });
 
     // it('getStdout()', () => {
-    //     const bin = 'ffmpeg';
+    //     const bin = path.join(__dirname, '..', '..', 'bin', 'windows','ffmpeg.exe');
     //     const input = path.join(__dirname, 'assets', 'test.mp4');
     //     const output = path.join(TEMP_DIR, 'output.mp4');
     //     const ffmpeg = new FFmpeg(bin, input, output)
