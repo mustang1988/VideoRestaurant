@@ -1,5 +1,6 @@
 // interface defines
 import { ChildProcess } from 'child_process';
+import Redis from 'ioredis';
 import {
     EResult,
     EMessageType,
@@ -313,4 +314,20 @@ export interface IRedisConfig {
 
 export interface IQueueConfig extends IRedisConfig {
     name: string;
+}
+
+export interface IQueue {
+    getQueue(): Redis;
+    getName(): string;
+    pop(): Promise<string | null>;
+    push(msg: string): Promise<boolean>;
+}
+
+export interface IForkRequestMessage {
+    config: IQueueConfig;
+    message?: string;
+}
+
+export interface IForkResponseMessage<T> {
+    result: T;
 }

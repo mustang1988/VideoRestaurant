@@ -1,5 +1,6 @@
 import { IRedisConfig } from '../../types/Interfaces';
 import { createClient } from '@redis/client';
+import Redis from 'ioredis';
 export const client = createClient();
 export type RedisClientType = typeof client;
 export class RedisClientFactory {
@@ -14,6 +15,12 @@ export class RedisClientFactory {
                 : `redis://${host}:${port}`;
         const client = createClient({ url: url });
         auto_connect && (await client.connect());
+        return client;
+    }
+
+    static CreateIORedisClient(config: IRedisConfig): Redis {
+        const { host, port, username, pwd } = config;
+        const client = new Redis(port, host, { username, password: pwd });
         return client;
     }
 }
